@@ -10,5 +10,7 @@ public interface PartService {
     // if uploadId don't exist, InvalidUploadException will throw
     public void put(String uploadId, String partEtag, int part);
 
+    public void delete(String uploadId);
+
     public SortedMap<Integer, String> get(String uploadId);
 }

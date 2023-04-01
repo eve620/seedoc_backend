@@ -12,7 +12,9 @@ public interface LocalStorageService {
     public String createUpload() throws Exception;
 
     // 上传分片
-    public void putPart(InputStream stream, String uploadId, int part) throws IOException;
+    public String putPart(InputStream stream, String uploadId, int part) throws IOException;
+
+    public void abortUpload(String uploadId) throws IOException;
 
     // 完成分片
     public String completeUpload(String uploadId) throws IOException, NoSuchAlgorithmException;

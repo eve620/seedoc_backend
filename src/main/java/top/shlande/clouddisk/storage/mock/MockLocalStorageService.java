@@ -3,6 +3,7 @@ package top.shlande.clouddisk.storage.mock;
 import top.shlande.clouddisk.storage.LocalStorageService;
 
 import java.io.ByteArrayInputStream;
+import java.io.IOException;
 import java.io.InputStream;
 
 public class MockLocalStorageService implements LocalStorageService {
@@ -14,8 +15,12 @@ public class MockLocalStorageService implements LocalStorageService {
     }
 
     @Override
-    public void putPart(InputStream stream, String uploadId, int part) {
+    public String putPart(InputStream stream, String uploadId, int part) {
+        return uploadId;
     }
+
+    @Override
+    public void abortUpload(String uploadId) throws IOException {}
 
     @Override
     public String completeUpload(String uploadId) {

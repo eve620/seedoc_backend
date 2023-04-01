@@ -9,7 +9,7 @@ import java.util.concurrent.Callable;
 
 public class MemoryPartService implements PartService {
     private Callable<UUID> ug = UUID::randomUUID;
-    private HashMap<UUID, SortedMap<Integer, String>> parts;
+    private final HashMap<UUID, SortedMap<Integer, String>> parts = new HashMap<>();
 
 
     @Override
@@ -27,6 +27,11 @@ public class MemoryPartService implements PartService {
             throw new InvalidUploadException(uploadId);
         }
         parts_.put(part, partEtag);
+    }
+
+    @Override
+    public void delete(String uploadId) {
+        this.parts.remove(UUID.fromString(uploadId));
     }
 
     @Override
