@@ -1,20 +1,15 @@
 package top.shlande.clouddisk.storage.part;
 
 
-import java.util.HashMap;
-import java.util.SortedMap;
-import java.util.TreeMap;
-import java.util.UUID;
-import java.util.concurrent.Callable;
+import java.util.*;
 
 public class MemoryPartService implements PartService {
-    private Callable<UUID> ug = UUID::randomUUID;
-    private final HashMap<UUID, SortedMap<Integer, String>> parts = new HashMap<>();
+    private final HashMap<UUID, TreeMap<Integer, String>> parts = new HashMap<>();
 
 
     @Override
     public String create() throws Exception {
-        var uuid = this.ug.call();
+        var uuid = UUID.randomUUID();
         var parts_ = new TreeMap<Integer, String>();
         parts.put(uuid, parts_);
         return uuid.toString();
