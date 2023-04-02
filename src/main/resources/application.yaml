@@ -1,8 +1,13 @@
 
 spring:
-  data:
-    jdbc:
-      repositories:
-        enabled: false
   datasource:
-    url: jdbc:mysql://localhost:3306/todo
+    url: jdbc:mysql://172.17.0.3:3306/clouddisk
+    username: root
+    password: xiaopengfei
+  sql:
+    init:
+      mode: always
+
+logging:
+  level:
+    sql: trace

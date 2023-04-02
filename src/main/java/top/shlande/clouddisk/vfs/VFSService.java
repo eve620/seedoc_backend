@@ -7,5 +7,11 @@ public interface VFSService {
 
     public List<FileInfo> list(String dirKey, Integer maxKey, Integer start);
 
-    public FileInfo get(String key);
+    public List<FileInfo> walk(String dirKey);
+
+    // 通过路径获取文件信息
+    public FileInfo get(String path);
+
+    // 删除文件，如果是文件夹则递归删除
+    public void delete(String key);
 }

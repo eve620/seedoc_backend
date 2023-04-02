@@ -4,9 +4,7 @@ import java.util.List;
 
 public class MemoryVFSService implements VFSService {
     @Override
-    public void create(String dirKey, FileInfo info) {
-
-    }
+    public void create(String dirKey, FileInfo info) {}
 
     @Override
     public List<FileInfo> list(String dirKey, Integer maxKey, Integer start) {
@@ -14,7 +12,17 @@ public class MemoryVFSService implements VFSService {
     }
 
     @Override
+    public List<FileInfo> walk(String dirKey) {
+        return null;
+    }
+
+    @Override
     public FileInfo get(String key) {
         return null;
+    }
+
+    @Override
+    public void delete(String key) {
+
     }
 }

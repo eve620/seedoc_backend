@@ -6,9 +6,9 @@ public class FileInfo {
     public String name;
     public Integer size;
     public String contentType;
-    public String Owner;
+    public String owner;
     public Date created;
-    public Date lastModify;
+    public Date lastModified;
     public String etag;
     public String updateId;
 }
