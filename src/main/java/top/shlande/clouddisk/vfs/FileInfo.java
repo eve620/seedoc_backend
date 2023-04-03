@@ -10,5 +10,5 @@ public class FileInfo {
     public Date created;
     public Date lastModified;
     public String etag;
-    public String updateId;
+    public String uploadId;
 }

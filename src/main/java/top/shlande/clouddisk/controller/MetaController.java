@@ -8,9 +8,9 @@ import top.shlande.clouddisk.storage.LocalStorageService;
 import top.shlande.clouddisk.vfs.FileInfo;
 import top.shlande.clouddisk.vfs.VFSService;
 
-import java.net.http.HttpHeaders;
+import java.io.IOException;
 import java.nio.file.Path;
-import java.util.HashMap;
+import java.security.NoSuchAlgorithmException;
 import java.util.List;
 
 @RequestMapping("meta")
@@ -31,21 +31,42 @@ public class MetaController {
         return vfsService.list(prefix, maxKeys, startAfter);
     }
 
-    @GetMapping("/{*key}")
+    @GetMapping("/{key}")
     public void download(@PathVariable String key, HttpServletResponse response) {
         var fileInfo = vfsService.get(key);
         response.setStatus(HttpServletResponse.SC_MOVED_TEMPORARILY);
         response.setHeader("Location", "/file/" + fileInfo.etag);
     }
 
-    @PutMapping("/{*key}")
+    @PutMapping("/{key}")
     public String createUpload(@PathVariable String key, HttpServletRequest request) throws Exception {
+        // TODO: add owner service
+        var owner = "testOwner";
         var filePath = Path.of(key);
         var fileInfo = new FileInfo();
         fileInfo.contentType = request.getHeader("Content-Type");
         fileInfo.name = filePath.getFileName().toString();
-        fileInfo.updateId = storageService.createUpload();
-        vfsService.create(filePath.getParent().toString(), fileInfo);
-        return fileInfo.updateId;
+        fileInfo.owner = owner;
+        fileInfo.uploadId = storageService.createUpload();
+        var parent = filePath.getParent() == null ? "" : filePath.getParent().toString();
+        vfsService.create(parent, fileInfo);
+        return fileInfo.uploadId;
     }
+
+    // TODO：如何完成 ? 匹配？
+    // @PutMapping("/{uploadId}?complete")
+    @PutMapping("/{uploadId}/complete")
+    public String complete(@PathVariable String uploadId, HttpServletResponse response) {
+        String etag = null;
+        try {
+            etag = storageService.completeUpload(uploadId);
+        } catch (IOException exception) {
+            response.setStatus(500);
+        }
+        if (etag != null) {
+            vfsService.complete(uploadId, etag);
+        }
+        return etag;
+    }
+
 }

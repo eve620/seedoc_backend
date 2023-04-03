@@ -1,12 +1,16 @@
 package top.shlande.clouddisk.controller;
 
 import jakarta.servlet.ServletRequest;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import top.shlande.clouddisk.storage.LocalStorageService;
+import top.shlande.clouddisk.vfs.FileInfo;
+import top.shlande.clouddisk.vfs.VFSService;
 
 import java.io.IOException;
+import java.nio.file.Path;
 import java.security.NoSuchAlgorithmException;
 
 @RestController
@@ -20,19 +24,8 @@ public class FileController {
 
     // 如果不是local，则返回错误
     @PutMapping("/{uploadId}")
-    public void upload(@PathVariable String uploadId, @RequestParam Integer partNumber, ServletRequest request) throws IOException {
-        storageService.putPart(request.getInputStream(), uploadId, partNumber);
-    }
-
-    @PutMapping("/{uploadId}?complete")
-    public void complete(@PathVariable String uploadId, HttpServletResponse response) {
-        try {
-            storageService.completeUpload(uploadId);
-        } catch (NoSuchAlgorithmException exception) {
-            response.setStatus(400);
-        } catch (IOException exception) {
-            response.setStatus(500);
-        }
+    public void upload(@PathVariable String uploadId, @RequestParam Integer part, ServletRequest request) throws IOException {
+        storageService.putPart(request.getInputStream(), uploadId, part);
     }
 
     // 如果当前是Local类型，则直接写入内容

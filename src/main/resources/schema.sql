@@ -8,7 +8,7 @@ CREATE TABLE IF NOT EXISTS files
     `created`       DATETIME DEFAULT NOW(),
     `last_modified` DATETIME DEFAULT NOW(),
     `etag`          VARCHAR(128),
-    `update_id`     VARCHAR(128),
+    `upload_id`     VARCHAR(128),
     `parent`        VARCHAR(1024),
     INDEX (`parent`)
 );

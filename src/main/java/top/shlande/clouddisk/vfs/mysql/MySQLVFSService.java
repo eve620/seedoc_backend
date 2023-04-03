@@ -5,6 +5,7 @@ import top.shlande.clouddisk.vfs.FileInfo;
 import top.shlande.clouddisk.vfs.NilDirException;
 import top.shlande.clouddisk.vfs.VFSService;
 
+import java.io.File;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
@@ -69,10 +70,19 @@ public class MySQLVFSService implements VFSService {
         return this.repository.walk(dirKey, parentLike);
     }
 
+    public void complete(String uploadId, String etag) {
+        this.repository.complete(uploadId, etag);
+    }
+
     @Override
     public FileInfo get(String path) {
         var fileInfo = this.repository.getByPath(getParent(path), getFilename(path));
         return fileInfo == null ? null : fileInfo.toFileInfo();
+    }
+
+    @Override
+    public FileInfo getByUploadId(String uploadId) {
+        return null;
     }
 
     @Override

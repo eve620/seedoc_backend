@@ -12,6 +12,10 @@ public interface VFSService {
     // 通过路径获取文件信息
     public FileInfo get(String path);
 
+    public FileInfo getByUploadId(String uploadId);
+
+    public void complete(String uploadId, String etag);
+
     // 删除文件，如果是文件夹则递归删除
     public void delete(String key);
 }

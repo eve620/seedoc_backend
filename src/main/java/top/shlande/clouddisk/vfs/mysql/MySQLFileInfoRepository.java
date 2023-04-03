@@ -20,6 +20,10 @@ public interface MySQLFileInfoRepository extends CrudRepository<MySQLFileInfo, L
     public MySQLFileInfo getByEtag(@Param("etag") String etag);
 
     @Modifying
+    @Query("UPDATE files SET etag = :etag WHERE upload_id = :uploadId")
+    public void complete(@Param("uploadId") String uploadId, @Param("etag") String etag);
+
+    @Modifying
     @Query("DELETE FROM files WHERE parent = :parent and name = :name")
     public void deleteByPath(@Param("parent") String parent, @Param("name") String name);
 

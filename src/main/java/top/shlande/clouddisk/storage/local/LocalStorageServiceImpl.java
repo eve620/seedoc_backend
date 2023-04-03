@@ -97,13 +97,13 @@ public class LocalStorageServiceImpl implements LocalStorageService {
     }
 
     @Override
-    public String completeUpload(String uploadId) throws IOException, NoSuchAlgorithmException {
+    public String completeUpload(String uploadId) throws IOException {
         var parts_ = partService.get(uploadId);
         var partsPath = tempPath.resolve(uploadId);
         // 创建主文件
         var combinedPath = partsPath.resolve("combined");
         var combinedStream = new DigestOutputStream(
-                Files.newOutputStream(combinedPath), MessageDigest.getInstance("MD5")
+                Files.newOutputStream(combinedPath), this.digest
         );
         // 将文件进行组合
         for (Map.Entry<Integer, String> entry : parts_.entrySet()) {
@@ -131,7 +131,7 @@ public class LocalStorageServiceImpl implements LocalStorageService {
 
     public void deleteParts(String uploadId) throws IOException {
         var partsPath = tempPath.resolve(uploadId);
-        Files.walkFileTree(partsPath,new SimpleFileVisitor<>(){
+        Files.walkFileTree(partsPath, new SimpleFileVisitor<>() {
             @Override
             public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
                 Files.delete(file);

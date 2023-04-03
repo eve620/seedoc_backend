@@ -1,6 +1,5 @@
 package top.shlande.clouddisk.vfs;
 
-import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -25,7 +24,7 @@ public class VFSServiceTest {
     public VFSServiceTest() {
         testFile1.etag = testFile1Etag1;
         testFile1.name = "file";
-        testFile1.updateId = UUID.randomUUID().toString();
+        testFile1.uploadId = UUID.randomUUID().toString();
         testFile1.owner = adminId;
 
         testDir1.name = "dir";
@@ -48,6 +47,7 @@ public class VFSServiceTest {
         // 在根目录创建文件夹
         service.create("", testFile1);
         service.create("", testDir1);
+        // 完成上传
         // 在文件夹下创建文件
         service.create(testDir1.name, testFile1);
         // 重复创建文件，会覆盖
@@ -55,6 +55,8 @@ public class VFSServiceTest {
         service.create("", testFile1);
         var fileInfo =  service.get(testFile1.name);
         Assert.isTrue(fileInfo != null && Objects.equals(fileInfo.etag, testFile1Etag2), "should cover duplicated file");
+        // 标记文件上传完成
+        service.complete(fileInfo.uploadId, testFile1Etag1);
         // 查看根目录文件，应该是二
         Assert.isTrue(service.list("", 50, 0).size() == 2, "should be 2 object in root path");
         // 查看文件夹文件，应该是一

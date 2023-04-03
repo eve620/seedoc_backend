@@ -17,7 +17,7 @@ public interface LocalStorageService {
     public void abortUpload(String uploadId) throws IOException;
 
     // 完成分片
-    public String completeUpload(String uploadId) throws IOException, NoSuchAlgorithmException;
+    public String completeUpload(String uploadId) throws IOException;
 
     // 下载文件
     public InputStream getObject(String etag) throws IOException;

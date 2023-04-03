@@ -22,6 +22,16 @@ public class MemoryVFSService implements VFSService {
     }
 
     @Override
+    public FileInfo getByUploadId(String uploadId) {
+        return null;
+    }
+
+    @Override
+    public void complete(String uploadId, String etag) {
+
+    }
+
+    @Override
     public void delete(String key) {
 
     }

@@ -23,7 +23,7 @@ public class MySQLFileInfo {
     @LastModifiedDate
     public Date lastModified;
     public String etag;
-    public String updateId;
+    public String uploadId;
     // for index only
     public String parent;
 
@@ -35,7 +35,7 @@ public class MySQLFileInfo {
         this.created = info.created;
         this.lastModified = info.lastModified;
         this.etag = info.etag;
-        this.updateId = info.updateId;
+        this.uploadId = info.uploadId;
         this.parent = parent;
     }
 
@@ -48,7 +48,7 @@ public class MySQLFileInfo {
         result.created = this.created;
         result.lastModified = this.lastModified;
         result.etag = this.etag;
-        result.updateId = this.updateId;
+        result.uploadId = this.uploadId;
         return result;
     }
 }
