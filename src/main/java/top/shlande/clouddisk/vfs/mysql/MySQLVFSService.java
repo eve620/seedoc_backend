@@ -70,8 +70,8 @@ public class MySQLVFSService implements VFSService {
         return this.repository.walk(dirKey, parentLike);
     }
 
-    public void complete(String uploadId, String etag) {
-        this.repository.complete(uploadId, etag);
+    public void complete(String uploadId, String etag, Long size) {
+        this.repository.complete(uploadId, etag, size);
     }
 
     @Override
@@ -82,7 +82,11 @@ public class MySQLVFSService implements VFSService {
 
     @Override
     public FileInfo getByUploadId(String uploadId) {
-        return null;
+        var file = this.repository.getByUploadId(uploadId);
+        if (file == null) {
+            return null;
+        }
+        return file.toFileInfo();
     }
 
     @Override

@@ -10,6 +10,8 @@ import java.util.List;
 
 @Repository
 public interface MySQLFileInfoRepository extends CrudRepository<MySQLFileInfo, Long> {
+    public MySQLFileInfo getByUploadId(String uploadId);
+
     @Query("SELECT * from files WHERE parent = :parent and name = :name LIMIT 1")
     public MySQLFileInfo getByPath(@Param("parent") String parent, @Param("name") String name);
 
@@ -20,8 +22,8 @@ public interface MySQLFileInfoRepository extends CrudRepository<MySQLFileInfo, L
     public MySQLFileInfo getByEtag(@Param("etag") String etag);
 
     @Modifying
-    @Query("UPDATE files SET etag = :etag WHERE upload_id = :uploadId")
-    public void complete(@Param("uploadId") String uploadId, @Param("etag") String etag);
+    @Query("UPDATE files SET etag = :etag, size = :size WHERE upload_id = :uploadId")
+    public void complete(@Param("uploadId") String uploadId, @Param("etag") String etag, @Param("size") Long size);
 
     @Modifying
     @Query("DELETE FROM files WHERE parent = :parent and name = :name")

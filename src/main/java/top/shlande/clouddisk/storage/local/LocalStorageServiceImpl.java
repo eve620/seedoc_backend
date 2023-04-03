@@ -1,6 +1,7 @@
 package top.shlande.clouddisk.storage.local;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import top.shlande.clouddisk.storage.CompleteUploadResult;
 import top.shlande.clouddisk.storage.LocalStorageService;
 import top.shlande.clouddisk.storage.NilObjectException;
 import top.shlande.clouddisk.storage.part.PartService;
@@ -97,7 +98,7 @@ public class LocalStorageServiceImpl implements LocalStorageService {
     }
 
     @Override
-    public String completeUpload(String uploadId) throws IOException {
+    public CompleteUploadResult completeUpload(String uploadId) throws IOException {
         var parts_ = partService.get(uploadId);
         var partsPath = tempPath.resolve(uploadId);
         // 创建主文件
@@ -114,10 +115,11 @@ public class LocalStorageServiceImpl implements LocalStorageService {
         // 关闭主文件并移动
         combinedStream.close();
         var md5 = HexFormat.of().formatHex(combinedStream.getMessageDigest().digest());
+        var size = Files.size(combinedPath);
         Files.move(combinedPath, rootPath.resolve(md5), StandardCopyOption.REPLACE_EXISTING);
         terminalUpload(uploadId);
         // TODO：删除temp文件
-        return md5;
+        return new CompleteUploadResult(md5, size);
     }
 
     @Override

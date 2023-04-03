@@ -16,6 +16,7 @@ public class VFSServiceTest {
     private final String adminId = "admin";
 
     private final static FileInfo testFile1 = new FileInfo();
+    private final static FileInfo testFile2 = new FileInfo();
     private final static String testFile1Etag1 = UUID.randomUUID().toString();
     private final static String testFile1Etag2 = UUID.randomUUID().toString();
     private final static FileInfo testDir1 = new FileInfo();
@@ -26,6 +27,11 @@ public class VFSServiceTest {
         testFile1.name = "file";
         testFile1.uploadId = UUID.randomUUID().toString();
         testFile1.owner = adminId;
+
+        testFile2.etag = testFile1Etag2;
+        testFile2.name = "file";
+        testFile2.uploadId = UUID.randomUUID().toString();
+        testFile2.owner = adminId;
 
         testDir1.name = "dir";
         testDir1.owner = adminId;
@@ -51,12 +57,13 @@ public class VFSServiceTest {
         // 在文件夹下创建文件
         service.create(testDir1.name, testFile1);
         // 重复创建文件，会覆盖
-        testFile1.etag = testFile1Etag2;
-        service.create("", testFile1);
-        var fileInfo =  service.get(testFile1.name);
-        Assert.isTrue(fileInfo != null && Objects.equals(fileInfo.etag, testFile1Etag2), "should cover duplicated file");
+        service.create("", testFile2);
+        var fileInfo = service.get(testFile1.name);
+        Assert.isTrue(fileInfo != null && Objects.equals(fileInfo.etag, testFile2.etag), "should cover duplicated file");
         // 标记文件上传完成
-        service.complete(fileInfo.uploadId, testFile1Etag1);
+        service.complete(testFile2.uploadId, testFile1Etag1, 100L);
+        var result = service.getByUploadId(fileInfo.uploadId);
+        Assert.isTrue(result.etag.equals(testFile1Etag1) && result.size == 100L, "object info should be updated");
         // 查看根目录文件，应该是二
         Assert.isTrue(service.list("", 50, 0).size() == 2, "should be 2 object in root path");
         // 查看文件夹文件，应该是一

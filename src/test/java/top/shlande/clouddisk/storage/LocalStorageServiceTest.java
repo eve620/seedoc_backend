@@ -29,7 +29,7 @@ public class LocalStorageServiceTest {
         storageService.putPart(new ByteArrayInputStream("world".getBytes()), uploadId, 2);
         storageService.putPart(new ByteArrayInputStream("hello".getBytes()), uploadId, 1);
         var objectId = storageService.completeUpload(uploadId);
-        var result = new String(storageService.getObject(objectId).readAllBytes());
+        var result = new String(storageService.getObject(objectId.etag).readAllBytes());
         Assert.isTrue(result.equals("helloworld"), "got" + result);
     }
 

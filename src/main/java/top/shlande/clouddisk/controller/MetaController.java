@@ -4,6 +4,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+import top.shlande.clouddisk.storage.CompleteUploadResult;
 import top.shlande.clouddisk.storage.LocalStorageService;
 import top.shlande.clouddisk.vfs.FileInfo;
 import top.shlande.clouddisk.vfs.VFSService;
@@ -24,6 +25,7 @@ public class MetaController {
         this.vfsService = vfsService;
     }
 
+    // TODO: @GetMapping("/{prefix}?list")
     @GetMapping
     public List<FileInfo> list(@RequestParam String prefix,
                                @RequestParam(required = false, defaultValue = "50") int maxKeys,
@@ -34,6 +36,10 @@ public class MetaController {
     @GetMapping("/{key}")
     public void download(@PathVariable String key, HttpServletResponse response) {
         var fileInfo = vfsService.get(key);
+        if (fileInfo == null) {
+            response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+            return;
+        }
         response.setStatus(HttpServletResponse.SC_MOVED_TEMPORARILY);
         response.setHeader("Location", "/file/" + fileInfo.etag);
     }
@@ -57,16 +63,17 @@ public class MetaController {
     // @PutMapping("/{uploadId}?complete")
     @PutMapping("/{uploadId}/complete")
     public String complete(@PathVariable String uploadId, HttpServletResponse response) {
-        String etag = null;
+        CompleteUploadResult result = null;
         try {
-            etag = storageService.completeUpload(uploadId);
+            result = storageService.completeUpload(uploadId);
         } catch (IOException exception) {
             response.setStatus(500);
+            return "";
         }
-        if (etag != null) {
-            vfsService.complete(uploadId, etag);
+        if (result != null) {
+            vfsService.complete(uploadId, result.etag, result.size);
         }
-        return etag;
+        return result.etag;
     }
 
 }

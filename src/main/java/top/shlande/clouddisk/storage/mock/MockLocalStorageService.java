@@ -1,5 +1,6 @@
 package top.shlande.clouddisk.storage.mock;
 
+import top.shlande.clouddisk.storage.CompleteUploadResult;
 import top.shlande.clouddisk.storage.LocalStorageService;
 
 import java.io.ByteArrayInputStream;
@@ -20,11 +21,12 @@ public class MockLocalStorageService implements LocalStorageService {
     }
 
     @Override
-    public void abortUpload(String uploadId) throws IOException {}
+    public void abortUpload(String uploadId) throws IOException {
+    }
 
     @Override
-    public String completeUpload(String uploadId) {
-        return "test";
+    public CompleteUploadResult completeUpload(String uploadId) {
+        return new CompleteUploadResult("test",1000L);
     }
 
     @Override

@@ -27,7 +27,7 @@ public class MemoryVFSService implements VFSService {
     }
 
     @Override
-    public void complete(String uploadId, String etag) {
+    public void complete(String uploadId, String etag, Long size) {
 
     }
 
