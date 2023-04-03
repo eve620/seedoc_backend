@@ -1,27 +1,36 @@
 package top.shlande.clouddisk.user;
 
-public interface UserService {
-    // 查找用户信息
-    public UserDetail getUser(String userId);
+public class UserService {
+    private UserDetailService userDetailService;
+    private UserGroupService groupService;
 
-    // 添加用户到群组
-    public
+    // 创建用户,只允许管理员操作
+    public UserDetail addUser(String operator, String name, String groupId, UserRole role) {
+        var user = userDetailService.getUser(operator);
+        // 必须保证 group/role 存在
+        var group = groupService.get(groupId);
+        var newUser = user.createUser(name, group, role);
+        userDetailService.save(newUser);
+        return newUser;
+    }
 
-    // 添加用户到指定context中
-    public void setUser(String context);
+    // 删除用户， 只允许管理员操作
+    public void deleteUser(String operator, String userId) {
+        var user = userDetailService.getUser(operator);
+        var deleted = userDetailService.getUser(userId);
+        if (!user.canDelete(deleted)) {
+            throw new DenyException(operator, DenyException.deleteUserAction);
+        }
+        userDetailService.delete(userId);
+    }
 
-    // 删除用户
-    public void delete(String userId);
+    // 设置用户信息，只允许管理员操作
+    public void updateUser(String operator, String name, String context) {
 
-    // 创建群组
-    public Integer create(UserContext context);
+    }
 
-    // 设置群组权限
-    public void set(Integer id, UserContext context);
+    // 设置用户组,只允许全局管理员操作
+    public void addUserToGroup(String operator, String userId, String groupId) {
 
-    // 获取群组详情
-    public UserContext get(Integer groupId);
-
-    // 删除群组
-    public void delete(Integer groupId);
+    }
 }
