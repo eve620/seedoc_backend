@@ -86,7 +86,7 @@ public class UserController {
 
     @PutMapping("/group/{groupId}")
     public void setGroup(@PathVariable String groupId, @RequestBody GroupRequest request, HttpServletRequest http) {
-        this.userService.setGroup(getUserId(http), groupId, request.name,request.context);
+        this.userService.setGroup(getUserId(http), groupId, request.name, request.context);
     }
 
     @DeleteMapping("/group/{groupId}")

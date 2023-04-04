@@ -1,7 +1,21 @@
 package top.shlande.clouddisk.user.mysql;
 
-import org.springframework.data.repository.CrudRepository;
+import top.shlande.clouddisk.user.UserDetail;
+import top.shlande.clouddisk.user.UserDetailRepository;
 
-public interface MySQLUserDetailRepository extends CrudRepository<String, MySQLUserDetail> {
+public class MySQLUserDetailRepository implements UserDetailRepository {
+    @Override
+    public UserDetail get(String userId) {
+        return null;
+    }
 
+    @Override
+    public void save(UserDetail user) {
+
+    }
+
+    @Override
+    public void delete(String userId) {
+
+    }
 }

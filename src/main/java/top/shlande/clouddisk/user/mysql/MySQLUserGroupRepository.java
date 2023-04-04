@@ -1,6 +1,24 @@
 package top.shlande.clouddisk.user.mysql;
 
-import org.springframework.data.repository.CrudRepository;
+import top.shlande.clouddisk.user.UserContext;
+import top.shlande.clouddisk.user.UserGroup;
+import top.shlande.clouddisk.user.UserGroupRepository;
 
-public interface MySQLUserGroupRepository extends CrudRepository<String, MysqlUserGroup> {
+public class MySQLUserGroupRepository implements UserGroupRepository {
+    private SpringMySQLUserGroupRepository repository;
+
+    @Override
+    public void save(UserContext context) {
+
+    }
+
+    @Override
+    public UserGroup get(String groupId) {
+        return null;
+    }
+
+    @Override
+    public void delete(String groupId) {
+
+    }
 }
