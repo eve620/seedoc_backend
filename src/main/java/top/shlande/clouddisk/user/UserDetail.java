@@ -1,7 +1,5 @@
 package top.shlande.clouddisk.user;
 
-import lombok.AllArgsConstructor;
-
 import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
@@ -14,22 +12,20 @@ public class UserDetail {
     // 用户能够访问的路径信息
     public List<UserContext> context;
 
-    private UserDetail(String id, String group, UserRole role, String name, String avatar, List<UserContext> context) {
+    private UserDetail(String id, String group, UserRole role, String name, List<UserContext> context) {
         this.id = id;
         this.group = group;
         this.role = role;
         this.name = name;
-        this.avatar = avatar;
         this.context = context;
     }
-
 
 
     public UserDetail createUser(String name, UserGroup group, UserRole role) {
         onlyAdminCanCreateUser();
         return new UserDetail(
                 UUID.randomUUID().toString(), defaultCreateSameGroupUser(group.id), defaultCreateNormalUser(role),
-                name, null, null
+                name, null
         );
     }
 

@@ -10,6 +10,11 @@ public class MySQLUserDetailService implements UserDetailService {
     }
 
     @Override
+    public void save(UserDetail user) {
+
+    }
+
+    @Override
     public void add(String user, String group) {
 
     }

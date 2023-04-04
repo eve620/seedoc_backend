@@ -25,12 +25,20 @@ public class UserService {
     }
 
     // 设置用户信息，只允许管理员操作
-    public void updateUser(String operator, String name, String context) {
+    public void setUser(String operator, String userId, String name, String context, String group, UserRole role) {
 
     }
 
-    // 设置用户组,只允许全局管理员操作
-    public void addUserToGroup(String operator, String userId, String groupId) {
+    // 添加用户组，只允许管理员操作
+    public String addGroup(String operator, String name, String context) {
+        return "";
+    }
 
+    public void setGroup(String operator, String groupId, String name, String context) {
+    }
+
+    // 删除用户组，只允许管理员操作
+    public String deleteGroup(String operator, String groupId) {
+        return "";
     }
 }
