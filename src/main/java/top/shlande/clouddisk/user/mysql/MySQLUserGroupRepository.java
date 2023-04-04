@@ -1,24 +1,33 @@
 package top.shlande.clouddisk.user.mysql;
 
-import top.shlande.clouddisk.user.UserContext;
+import org.springframework.beans.factory.annotation.Autowired;
+import top.shlande.clouddisk.user.NotFoundException;
 import top.shlande.clouddisk.user.UserGroup;
 import top.shlande.clouddisk.user.UserGroupRepository;
 
 public class MySQLUserGroupRepository implements UserGroupRepository {
     private SpringMySQLUserGroupRepository repository;
 
-    @Override
-    public void save(UserContext context) {
+    public MySQLUserGroupRepository(@Autowired SpringMySQLUserGroupRepository repository) {
+        this.repository = repository;
+    }
 
+    @Override
+    public void save(UserGroup group) {
+        repository.save(new MysqlUserGroup(group));
     }
 
     @Override
     public UserGroup get(String groupId) {
-        return null;
+        var group = repository.findById(groupId);
+        if (group.isEmpty()) {
+            throw new NotFoundException(groupId);
+        }
+        return group.get().toGroup();
     }
 
     @Override
     public void delete(String groupId) {
-
+        repository.deleteById(groupId);
     }
 }

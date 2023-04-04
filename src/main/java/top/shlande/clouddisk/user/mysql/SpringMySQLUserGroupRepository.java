@@ -1,6 +1,8 @@
 package top.shlande.clouddisk.user.mysql;
 
 import org.springframework.data.repository.CrudRepository;
+import org.springframework.stereotype.Repository;
 
-public interface SpringMySQLUserGroupRepository extends CrudRepository<String, MysqlUserGroup> {
+@Repository
+public interface SpringMySQLUserGroupRepository extends CrudRepository<MysqlUserGroup,String> {
 }
