@@ -1,10 +1,19 @@
 package top.shlande.clouddisk.user;
 
-import org.apache.catalina.User;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
+@Service
 public class UserService {
     private UserDetailRepository userRepository;
     private UserGroupRepository groupRepository;
+    private SimpleLoginService loginService;
+
+    public UserService(@Autowired UserDetailRepository userRepository, @Autowired UserGroupRepository groupRepository, @Autowired SimpleLoginService loginService) {
+        this.userRepository = userRepository;
+        this.groupRepository = groupRepository;
+        this.loginService = loginService;
+    }
 
     // 创建用户,只允许管理员操作
     public UserDetail addUser(String operator, String name, String groupId, UserRole role) {
@@ -33,6 +42,15 @@ public class UserService {
         var group = groupRepository.get(groupId);
         operator.update(user, name, group, role, new UserContext(context));
         userRepository.save(user);
+    }
+
+    // 修改用户密码
+    public void setPassword(String operatorId, String userId, String newPassword) {
+        var operator = userRepository.get(operatorId);
+        var user = userRepository.get(userId);
+        operator.setCredential(user);
+        loginService.update(userId, newPassword);
+        // TODO: 注销所有的会话信息
     }
 
     // 添加用户组，只允许管理员操作

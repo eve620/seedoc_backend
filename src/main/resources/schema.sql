@@ -12,3 +12,13 @@ CREATE TABLE IF NOT EXISTS files
     `parent`        VARCHAR(1024),
     INDEX (`parent`)
 );
+
+CREATE TABLE IF NOT EXISTS users
+(
+    `id`            VARCHAR(128) NOT NULL PRIMARY KEY,
+    `group`         VARCHAR(128),
+    `context`       VARCHAR(1024),
+    `password`      VARCHAR(128),
+    `role`          ENUM('user','admin'),
+    `name`          VARCHAR(128) NOT NULL
+);

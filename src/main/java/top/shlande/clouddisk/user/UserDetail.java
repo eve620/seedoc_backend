@@ -36,6 +36,14 @@ public class UserDetail {
         throw new DenyException(this.id, DenyException.updateUserAction);
     }
 
+    // 判断用户是否可以更改其他账户的登录信息
+    public void setCredential(UserDetail user) {
+        if (this.isGlobalAdmin() || (this.isGroupAdmin(user.group) && !user.isAdmin())) {
+            return;
+        }
+        throw new DenyException(this.id, "");
+    }
+
     private void setWithDefault(String name, UserGroup group, UserRole role, UserContext context) {
         if (name != null) {
             this.name = name;

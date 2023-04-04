@@ -12,7 +12,9 @@ public class MySQLUserDetail {
     @Id
     public String id;
     public String group;
+    // https://docs.spring.io/spring-data/jdbc/docs/current/reference/html/#jdbc.entity-persistence.types
     public UserRole role;
+    public String password = null;
     public String name;
     public String context;
 

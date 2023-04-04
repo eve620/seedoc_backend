@@ -1,6 +1,7 @@
 package top.shlande.clouddisk.user.mysql;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Repository;
 import top.shlande.clouddisk.user.NotFoundException;
 import top.shlande.clouddisk.user.UserDetail;
 import top.shlande.clouddisk.user.UserDetailRepository;
@@ -14,7 +15,7 @@ public class MySQLUserDetailRepository implements UserDetailRepository {
 
     @Override
     public UserDetail get(String userId) {
-        var user = this.repository.findById(userId);
+        var user = this.repository.get(userId);
         if (user.isEmpty()) {
             throw new NotFoundException(userId);
         }
@@ -23,11 +24,11 @@ public class MySQLUserDetailRepository implements UserDetailRepository {
 
     @Override
     public void save(UserDetail user) {
-        this.repository.save(new MySQLUserDetail(user));
+        this.repository.update(user.id, user.group, user.role, user.name, user.context.toString());
     }
 
     @Override
     public void delete(String userId) {
-        this.repository.deleteById(userId);
+        this.repository.delete(userId);
     }
 }
