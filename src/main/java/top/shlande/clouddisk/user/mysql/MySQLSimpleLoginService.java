@@ -14,11 +14,10 @@ public class MySQLSimpleLoginService implements SimpleLoginService {
 
     @Override
     public String login(String userId, String password) {
-        var userOption = this.repository.get(userId);
-        if (userOption.isEmpty()) {
+        var user = this.repository.get(userId);
+        if (user == null) {
             throw new NotFoundException(userId);
         }
-        var user = userOption.get();
         if (!Objects.equals(user.password, password)) {
             return userId;
         }

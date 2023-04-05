@@ -16,10 +16,10 @@ public class MySQLUserDetailRepository implements UserDetailRepository {
     @Override
     public UserDetail get(String userId) {
         var user = this.repository.get(userId);
-        if (user.isEmpty()) {
+        if (user == null) {
             throw new NotFoundException(userId);
         }
-        return user.get().toUserDetail();
+        return user.toUserDetail();
     }
 
     @Override

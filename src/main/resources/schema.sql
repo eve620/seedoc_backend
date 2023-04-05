@@ -9,7 +9,7 @@ CREATE TABLE IF NOT EXISTS files
     `last_modified` DATETIME DEFAULT NOW(),
     `etag`          VARCHAR(128),
     `upload_id`     VARCHAR(128),
-    `parent`        VARCHAR(1024),
+    `parent`        VARCHAR(512),
     INDEX (`parent`)
 );
 
@@ -19,6 +19,23 @@ CREATE TABLE IF NOT EXISTS users
     `group`         VARCHAR(128),
     `context`       VARCHAR(1024),
     `password`      VARCHAR(128),
-    `role`          ENUM('user','admin'),
+    `role`          ENUM('USER','ADMIN'),
     `name`          VARCHAR(128) NOT NULL
 );
+
+INSERT IGNORE INTO users
+    (id, `group`, context,password,role,name)
+VALUES
+    ('admin', '','','admin','ADMIN','admin');
+
+CREATE TABLE IF NOT EXISTS `groups`
+(
+    `id`            VARCHAR(48) NOT NULL PRIMARY KEY,
+    `context`         VARCHAR(1024),
+    `name`          VARCHAR(128)
+);
+
+INSERT IGNORE INTO `groups`
+    (id, context, name)
+VALUES
+    ('','','admin');

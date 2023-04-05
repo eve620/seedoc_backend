@@ -83,15 +83,15 @@ public class UserDetail {
     }
 
     private UserRole defaultCreateNormalUser(UserRole role) {
-        return role == null ? UserRole.User : role;
+        return role == null ? UserRole.USER : role;
     }
 
     public boolean isGlobalAdmin() {
-        return this.group.equals(UserGroup.GlobalGroup) && this.role == UserRole.Admin;
+        return this.group.equals(UserGroup.GlobalGroup) && this.role == UserRole.ADMIN;
     }
 
     public boolean isAdmin() {
-        return this.role == UserRole.Admin;
+        return this.role == UserRole.ADMIN;
     }
 
     private boolean isGroupAdmin(String groupId) {

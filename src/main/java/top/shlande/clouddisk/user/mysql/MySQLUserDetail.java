@@ -1,5 +1,7 @@
 package top.shlande.clouddisk.user.mysql;
 
+import lombok.Data;
+import lombok.NoArgsConstructor;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.relational.core.mapping.Column;
 import org.springframework.data.relational.core.mapping.Table;
@@ -7,7 +9,8 @@ import top.shlande.clouddisk.user.UserContext;
 import top.shlande.clouddisk.user.UserDetail;
 import top.shlande.clouddisk.user.UserRole;
 
-@Table("user")
+@NoArgsConstructor
+@Table("users")
 public class MySQLUserDetail {
     @Id
     public String id;
