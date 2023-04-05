@@ -100,8 +100,10 @@ public class UserController {
     }
 
     private String getUserId(HttpServletRequest http) {
-        return Arrays.stream(http.getCookies())
-                .filter(cookie -> cookie.getName().equals(CookieKeyUserId))
-                .findFirst().get().getValue();
+        var session = http.getSession(false);
+        if (session == null) {
+            return  null;
+        }
+        return (String) session.getAttribute("userId");
     }
 }
