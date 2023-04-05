@@ -3,6 +3,7 @@ package top.shlande.clouddisk.controller;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import lombok.Data;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import top.shlande.clouddisk.user.SimpleLoginService;
@@ -11,6 +12,7 @@ import top.shlande.clouddisk.user.UserService;
 
 import java.util.Arrays;
 
+@RestController
 @RequestMapping("user")
 public class UserController {
     private final static String CookieKeyUserId = "userId";
@@ -22,6 +24,7 @@ public class UserController {
         this.loginService = loginService;
     }
 
+    @Data
     public static class LoginRequest {
         public String name;
         public String password;
@@ -29,18 +32,20 @@ public class UserController {
 
     // 用户退出
     @DeleteMapping("/logout")
-    public void logout(HttpServletResponse response) {
+    public void logout(HttpServletRequest request) {
         // https://kodejava.org/how-do-i-delete-a-cookie-in-servlet/
-        var cookie = new Cookie(CookieKeyUserId, "");
-        cookie.setMaxAge(0);
-        response.addCookie(cookie);
+        var session = request.getSession(false);
+        if (session == null) {
+            return;
+        }
+        session.invalidate();
     }
 
 
     // 用户登录
     @PostMapping("/login")
-    public void login(@RequestBody LoginRequest login, HttpServletResponse response) {
-        response.addCookie(new Cookie(CookieKeyUserId, this.loginService.login(login.name, login.password)));
+    public void login(@RequestBody LoginRequest login, HttpServletRequest request) {
+        request.getSession(true).setAttribute("userId",this.loginService.login(login.name, login.password));
     }
 
     public static class UserRequest {

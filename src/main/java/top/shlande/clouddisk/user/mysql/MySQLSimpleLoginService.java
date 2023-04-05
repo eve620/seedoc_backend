@@ -19,10 +19,10 @@ public class MySQLSimpleLoginService implements SimpleLoginService {
             throw new NotFoundException(userId);
         }
         if (!Objects.equals(user.password, password)) {
-            return userId;
+            throw new NotFoundException(userId);
         }
         // TODO：密码错误
-        throw new NotFoundException(userId);
+        return userId;
     }
 
     @Override
