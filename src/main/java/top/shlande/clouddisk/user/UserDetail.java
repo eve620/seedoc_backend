@@ -21,9 +21,10 @@ public class UserDetail {
 
 
     public UserDetail createUser(String name, UserGroup group, UserRole role) {
+        var groupId = defaultCreateSameGroupUser(group == null ? null : group.id);
         onlyAdminCanCreateUser();
         return new UserDetail(
-                UUID.randomUUID().toString(), defaultCreateSameGroupUser(group.id), defaultCreateNormalUser(role),
+                UUID.randomUUID().toString(), groupId, defaultCreateNormalUser(role),
                 name, null
         );
     }
@@ -71,7 +72,7 @@ public class UserDetail {
             return groupId;
         }
         // 如果当前用户非全局管理员，则新创建的用户组默认属于当前组
-        if (isGroupAdmin(groupId)) {
+        if ((groupId != null && isGroupAdmin(groupId)) || isAdmin()) {
             return groupId == null ? this.group : groupId;
         }
         // 其他情况都拒绝
@@ -79,7 +80,7 @@ public class UserDetail {
     }
 
     public boolean canDelete(UserDetail userDetail) {
-        return userDetail != null && (isGlobalAdmin() || isGroupAdmin(userDetail.group));
+        return userDetail != null && (isGlobalAdmin() || isGroupAdmin(userDetail.group) && !userDetail.isAdmin());
     }
 
     private UserRole defaultCreateNormalUser(UserRole role) {
@@ -94,6 +95,7 @@ public class UserDetail {
         return this.role == UserRole.ADMIN;
     }
 
+    // 如果 groupId 为空，返回false
     private boolean isGroupAdmin(String groupId) {
         return isAdmin() && Objects.equals(this.group, groupId);
     }

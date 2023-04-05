@@ -23,8 +23,13 @@ public class MySQLUserDetailRepository implements UserDetailRepository {
     }
 
     @Override
-    public void save(UserDetail user) {
-        this.repository.update(user.id, user.group, user.role, user.name, user.context.toString());
+    public void update(UserDetail user) {
+        this.repository.update(user.id, user.group, user.role, user.name, user.context == null ? null : user.context.toString());
+    }
+
+    @Override
+    public void create(UserDetail user) {
+        this.repository.create(user.id, user.group, user.role, user.name, user.context == null ? null : user.context.toString());
     }
 
     @Override

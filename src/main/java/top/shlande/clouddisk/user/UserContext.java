@@ -15,6 +15,7 @@ public class UserContext {
 
 
     public UserContext(String context) {
+        context = context == null ? "" : context;
         this.context = new TreeSet<>(List.of(context.split("\\|")));
     }
 

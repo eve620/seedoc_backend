@@ -5,7 +5,9 @@ public interface UserDetailRepository {
     public UserDetail get(String userId);
 
     // 添加新用户
-    public void save(UserDetail user);
+    public void create(UserDetail user);
+
+    public void update(UserDetail user);
 
     // 删除用户
     public void delete(String userId);

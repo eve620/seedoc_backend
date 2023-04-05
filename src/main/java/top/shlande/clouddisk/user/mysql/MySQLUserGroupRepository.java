@@ -16,7 +16,8 @@ public class MySQLUserGroupRepository implements UserGroupRepository {
 
     @Override
     public void save(UserGroup group) {
-        repository.save(new MysqlUserGroup(group));
+        // FIXME: save will panic
+        repository.insert(group.id, group.name, group.context.toString());
     }
 
     @Override

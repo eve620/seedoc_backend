@@ -35,7 +35,7 @@ public class UserServiceTest {
         var gotError = false;
         try {
             this.userService.addUser(user.id, "shouldNotSuccessAdded", null, normalUserRole);
-        } catch (Exception e) {
+        } catch (DenyException e) {
             gotError = true;
         }
         Assert.isTrue(gotError, "should got error");
@@ -43,7 +43,7 @@ public class UserServiceTest {
         gotError = false;
         try {
             this.userService.addUser(user.id, "shouldNotSuccessAdded", null, adminUserRole);
-        } catch (Exception e) {
+        } catch (DenyException e) {
             gotError = true;
         }
         Assert.isTrue(gotError, "should got error");
@@ -59,22 +59,16 @@ public class UserServiceTest {
         // 普通管理员删除用户
         this.userService.deleteUser(admin.id, user.id);
         // 普通管理员创建管理员
-        gotError = false;
-        try {
-            this.userService.addUser(admin.id, "shouldNotSuccessAdded", null, UserRole.ADMIN);
-        } catch (Exception e) {
-            gotError = true;
-        }
-        Assert.isTrue(gotError, "should got error");
+        this.userService.addUser(admin.id, "shouldNotSuccessAdded", null, UserRole.ADMIN);
         // 普通管理员删除管理员
         gotError = false;
         try {
             this.userService.deleteUser(admin.id, admin.id);
-        } catch (Exception e) {
+        } catch (DenyException e) {
             gotError = true;
         }
         Assert.isTrue(gotError, "should got error");
         // 超级管理员删除管理员
-        this.userService.deleteUser(superadminId, user.id);
+        this.userService.deleteUser(superadminId, admin.id);
     }
 }

@@ -19,9 +19,12 @@ public class UserService {
     public UserDetail addUser(String operator, String name, String groupId, UserRole role) {
         var user = userRepository.get(operator);
         // 必须保证 group/role 存在
-        var group = groupRepository.get(groupId);
+        UserGroup group = null;
+        if (groupId != null) {
+            group = groupRepository.get(groupId);
+        }
         var newUser = user.createUser(name, group, role);
-        userRepository.save(newUser);
+        userRepository.create(newUser);
         return newUser;
     }
 
@@ -41,7 +44,7 @@ public class UserService {
         var user = userRepository.get(userId);
         var group = groupRepository.get(groupId);
         operator.update(user, name, group, role, new UserContext(context));
-        userRepository.save(user);
+        userRepository.update(user);
     }
 
     // 修改用户密码

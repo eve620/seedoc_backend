@@ -7,7 +7,7 @@ import org.springframework.data.relational.core.mapping.Table;
 import top.shlande.clouddisk.user.UserContext;
 import top.shlande.clouddisk.user.UserGroup;
 
-@Data
+@NoArgsConstructor
 @Table("groups")
 public class MysqlUserGroup {
     @Id
