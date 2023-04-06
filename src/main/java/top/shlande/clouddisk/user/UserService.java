@@ -15,6 +15,7 @@ public class UserService {
         this.loginService = loginService;
     }
 
+
     // 创建用户,只允许管理员操作
     public UserDetail addUser(String operator, String name, String groupId, UserRole role) {
         var user = userRepository.get(operator);

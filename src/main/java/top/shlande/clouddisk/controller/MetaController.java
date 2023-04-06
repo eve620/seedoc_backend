@@ -7,6 +7,7 @@ import org.springframework.web.bind.annotation.*;
 import top.shlande.clouddisk.storage.CompleteUploadResult;
 import top.shlande.clouddisk.storage.LocalStorageService;
 import top.shlande.clouddisk.user.DenyException;
+import top.shlande.clouddisk.user.UserDetail;
 import top.shlande.clouddisk.user.UserDetailRepository;
 import top.shlande.clouddisk.user.UserService;
 import top.shlande.clouddisk.vfs.FileInfo;
@@ -109,13 +110,28 @@ public class MetaController {
         this.vfsService.create(parentKey, dir);
     }
 
-    private String getUserId(HttpServletRequest http) {
+    @GetMapping("/user/{id}")
+    private UserDetail getUser(@PathVariable("id") String id) {
+        return this.userService.getUser(id);
+    }
+
+    @GetMapping("/user/whoami")
+    private UserDetail whoAmI(HttpServletRequest http) {
         var session = http.getSession(false);
         if (session == null) {
             return null;
         }
+        return this.userService.getUser((String) session.getAttribute("userId"));
+    }
+
+    private String getUserId(HttpServletRequest http) {
+        var session = http.getSession(false);
+        if (session == null) {
+            return  null;
+        }
         return (String) session.getAttribute("userId");
     }
+
 
     private String deleteSlashPrefix(String key) {
         if (key != null && key.indexOf("/") == 0) {
