@@ -47,6 +47,11 @@ public class UserService {
         userRepository.update(user);
     }
 
+    // 获取用户信息
+    public UserDetail getUser(String userId) {
+        return this.userRepository.get(userId);
+    }
+
     // 修改用户密码
     public void setPassword(String operatorId, String userId, String newPassword) {
         var operator = userRepository.get(operatorId);

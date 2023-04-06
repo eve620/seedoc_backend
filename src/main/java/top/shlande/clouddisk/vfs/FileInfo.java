@@ -1,5 +1,6 @@
 package top.shlande.clouddisk.vfs;
 
+import java.nio.file.Path;
 import java.util.Date;
 
 public class FileInfo {
@@ -11,4 +12,11 @@ public class FileInfo {
     public Date lastModified;
     public String etag;
     public String uploadId;
+    public static FileInfo dir(String key) {
+        var fileInfo = new FileInfo();
+        fileInfo.name = Path.of(key).getFileName().toString();
+        fileInfo.contentType = "dir";
+        fileInfo.lastModified = new Date();
+        return fileInfo;
+    }
 }

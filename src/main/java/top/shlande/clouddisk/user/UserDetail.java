@@ -1,5 +1,7 @@
 package top.shlande.clouddisk.user;
 
+import org.apache.catalina.User;
+
 import java.util.Objects;
 import java.util.UUID;
 

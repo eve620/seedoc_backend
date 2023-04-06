@@ -6,12 +6,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import top.shlande.clouddisk.storage.CompleteUploadResult;
 import top.shlande.clouddisk.storage.LocalStorageService;
+import top.shlande.clouddisk.user.DenyException;
+import top.shlande.clouddisk.user.UserDetailRepository;
+import top.shlande.clouddisk.user.UserService;
 import top.shlande.clouddisk.vfs.FileInfo;
 import top.shlande.clouddisk.vfs.VFSService;
 
 import java.io.IOException;
 import java.nio.file.Path;
-import java.security.NoSuchAlgorithmException;
 import java.util.List;
 
 @RequestMapping("meta")
@@ -19,9 +21,11 @@ import java.util.List;
 public class MetaController {
     private final LocalStorageService storageService;
     private final VFSService vfsService;
+    private final UserService userService;
 
-    public MetaController(@Autowired LocalStorageService storageService, @Autowired VFSService vfsService) {
+    public MetaController(@Autowired UserService userService, @Autowired LocalStorageService storageService, @Autowired VFSService vfsService) {
         this.storageService = storageService;
+        this.userService = userService;
         this.vfsService = vfsService;
     }
 
@@ -33,8 +37,9 @@ public class MetaController {
         return vfsService.list(prefix, maxKeys, startAfter);
     }
 
-    @GetMapping("/{key}")
+    @GetMapping("/{*key}")
     public void download(@PathVariable String key, HttpServletResponse response) {
+        key = deleteSlashPrefix(key);
         var fileInfo = vfsService.get(key);
         if (fileInfo == null) {
             response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
@@ -44,8 +49,9 @@ public class MetaController {
         response.setHeader("Location", "/file/" + fileInfo.etag);
     }
 
-    @PutMapping("/{key}")
+    @PutMapping("/{*key}")
     public String createUpload(@PathVariable String key, HttpServletRequest request) throws Exception {
+        key = deleteSlashPrefix(key);
         // TODO: add owner service
         var owner = "testOwner";
         var filePath = Path.of(key);
@@ -76,4 +82,45 @@ public class MetaController {
         return result.etag;
     }
 
+    @DeleteMapping("/{*key}")
+    public void delete(@PathVariable("key") String key, HttpServletRequest http, HttpServletResponse response) {
+        key = deleteSlashPrefix(key);
+        var user = this.userService.getUser(getUserId(http));
+        // 检查用户是否有资格
+        if (!user.context.canAccess(key)) {
+            response.setStatus(400);
+            return;
+        }
+        this.vfsService.delete(key);
+    }
+
+    // TODO: 重新调整一下地址
+    @PostMapping("/{*key}")
+    public void createDir(@PathVariable String key, HttpServletRequest request) {
+        key = deleteSlashPrefix(key);
+        var user = userService.getUser(getUserId(request));
+        var parent = Path.of(key).getParent();
+        var parentKey = parent == null ? "" : parent.toString();
+        if (!user.context.canAccess(parentKey)) {
+            throw new DenyException(user.id, "createDir");
+        }
+        var dir = FileInfo.dir(key);
+        dir.owner = user.id;
+        this.vfsService.create(parentKey, dir);
+    }
+
+    private String getUserId(HttpServletRequest http) {
+        var session = http.getSession(false);
+        if (session == null) {
+            return null;
+        }
+        return (String) session.getAttribute("userId");
+    }
+
+    private String deleteSlashPrefix(String key) {
+        if (key != null && key.indexOf("/") == 0) {
+            return key.substring(1);
+        }
+        return key;
+    }
 }

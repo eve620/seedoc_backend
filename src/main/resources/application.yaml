@@ -1,4 +1,3 @@
-
 spring:
   datasource:
     url: jdbc:mysql://localhost:3306/clouddisk
@@ -8,6 +7,16 @@ spring:
     init:
       mode: always
 
+
 logging:
   level:
     sql: trace
+server:
+  http2:
+    enabled: true
+  ssl:
+    key-alias: tomcat
+    key-store: ./keystore.p12
+    keyStoreType: PKCS12
+    key-store-password: xiaopengfei
+  # https://docs.spring.io/spring-cloud-skipper/docs/1.0.0.BUILD-SNAPSHOT/reference/html/configuration-security-enabling-https.html
