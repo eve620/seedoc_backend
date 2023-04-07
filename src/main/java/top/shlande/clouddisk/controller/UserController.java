@@ -1,16 +1,13 @@
 package top.shlande.clouddisk.controller;
 
-import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
 import lombok.Data;
+import org.apache.shiro.SecurityUtils;
+import org.apache.shiro.authc.UsernamePasswordToken;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import top.shlande.clouddisk.user.SimpleLoginService;
-import top.shlande.clouddisk.user.UserRole;
 import top.shlande.clouddisk.user.UserService;
-
-import java.util.Arrays;
 
 @RestController
 @RequestMapping("user")
@@ -44,8 +41,9 @@ public class UserController {
 
     // 用户登录
     @PostMapping("/login")
-    public void login(@RequestBody LoginRequest login, HttpServletRequest request) {
-        request.getSession(true).setAttribute("userId",this.loginService.login(login.name, login.password));
+    public void login(@RequestBody LoginRequest login) {
+        var subject = SecurityUtils.getSubject();
+        subject.login(new UsernamePasswordToken(login.name,login.password));
     }
 
     public static class UserRequest {

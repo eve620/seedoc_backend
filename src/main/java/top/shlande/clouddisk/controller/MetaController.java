@@ -7,8 +7,6 @@ import org.springframework.web.bind.annotation.*;
 import top.shlande.clouddisk.storage.CompleteUploadResult;
 import top.shlande.clouddisk.storage.LocalStorageService;
 import top.shlande.clouddisk.user.DenyException;
-import top.shlande.clouddisk.user.UserDetail;
-import top.shlande.clouddisk.user.UserDetailRepository;
 import top.shlande.clouddisk.user.UserService;
 import top.shlande.clouddisk.vfs.FileInfo;
 import top.shlande.clouddisk.vfs.VFSService;

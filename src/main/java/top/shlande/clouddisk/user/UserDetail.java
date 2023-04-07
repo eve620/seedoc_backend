@@ -1,17 +1,17 @@
 package top.shlande.clouddisk.user;
 
 import org.apache.catalina.User;
+import org.apache.shiro.authz.Permission;
+import org.apache.shiro.authz.SimpleRole;
 
 import java.util.Objects;
 import java.util.UUID;
 
 public class UserDetail {
     public String id;
-    public String group;
-    public UserRole role;
     public String name;
-    // 用户能够访问的路径信息
-    public UserContext context;
+    public SimpleRole role;
+    public Permission permission;
 
     public UserDetail(String id, String group, UserRole role, String name, UserContext context) {
         this.id = id;
@@ -23,6 +23,7 @@ public class UserDetail {
 
 
     public UserDetail createUser(String name, UserGroup group, UserRole role) {
+
         var groupId = defaultCreateSameGroupUser(group == null ? null : group.id);
         onlyAdminCanCreateUser();
         return new UserDetail(

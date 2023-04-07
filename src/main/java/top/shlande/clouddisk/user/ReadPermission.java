@@ -1,4 +1,4 @@
-package top.shlande.clouddisk.permission;
+package top.shlande.clouddisk.user;
 
 import org.apache.shiro.authz.permission.WildcardPermission;
 

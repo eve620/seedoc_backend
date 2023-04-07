@@ -13,29 +13,12 @@ CREATE TABLE IF NOT EXISTS files
     INDEX (`parent`)
 );
 
-CREATE TABLE IF NOT EXISTS users
+
+CREATE TABLE `users`
 (
-    `id`            VARCHAR(128) NOT NULL PRIMARY KEY,
-    `group`         VARCHAR(128),
-    `context`       VARCHAR(1024),
-    `password`      VARCHAR(128),
-    `role`          ENUM('USER','ADMIN'),
-    `name`          VARCHAR(128) NOT NULL
+    `id`            int NOT NULL AUTO_INCREMENT PRIMARY KEY ,
+    `username`      varchar(128) NOT NULL UNIQUE,
+    `password`      varchar(128) NOT NULL,
+    `password_salt` varchar(128) NOT NULL,
+    `role`          varchar(128) NOT NULL
 );
-
-INSERT IGNORE INTO users
-    (id, `group`, context,password,role,name)
-VALUES
-    ('admin', '','','admin','ADMIN','admin');
-
-CREATE TABLE IF NOT EXISTS `groups`
-(
-    `id`            VARCHAR(48) NOT NULL PRIMARY KEY,
-    `context`         VARCHAR(1024),
-    `name`          VARCHAR(128)
-);
-
-INSERT IGNORE INTO `groups`
-    (id, context, name)
-VALUES
-    ('','','admin');

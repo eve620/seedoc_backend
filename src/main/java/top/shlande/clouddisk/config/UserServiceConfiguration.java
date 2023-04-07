@@ -4,8 +4,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import top.shlande.clouddisk.user.SimpleLoginService;
-import top.shlande.clouddisk.user.UserDetailRepository;
-import top.shlande.clouddisk.user.UserGroupRepository;
 import top.shlande.clouddisk.user.mysql.*;
 
 @Configuration
