@@ -2,13 +2,15 @@ package top.shlande.clouddisk.user;
 
 import org.apache.catalina.User;
 import org.apache.logging.log4j.util.Strings;
+import org.apache.shiro.authz.Permission;
+import org.apache.shiro.authz.permission.PermissionResolver;
 
 import java.util.List;
 import java.util.Objects;
 import java.util.Set;
 import java.util.TreeSet;
 
-public class UserContext {
+public class UserContext implements PermissionResolver {
     public static String global = "";
     private static final char separator = '|';
     public Set<String> context;
@@ -38,5 +40,10 @@ public class UserContext {
             }
         }
         return false;
+    }
+
+    @Override
+    public Permission resolvePermission(String permissionString) {
+        return null;
     }
 }
