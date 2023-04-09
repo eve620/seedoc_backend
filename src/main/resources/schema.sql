@@ -16,9 +16,15 @@ CREATE TABLE IF NOT EXISTS files
 
 CREATE TABLE `users`
 (
-    `id`            int NOT NULL AUTO_INCREMENT PRIMARY KEY ,
+    `id`            int          NOT NULL AUTO_INCREMENT PRIMARY KEY,
     `username`      varchar(128) NOT NULL UNIQUE,
     `password`      varchar(128) NOT NULL,
-    `password_salt` varchar(128) NOT NULL,
+    `password_salt` varchar(128),
     `role`          varchar(128) NOT NULL
 );
+
+
+INSERT IGNORE INTO `users`
+    (`id`, `username`, `password`, `password_salt`, `role`)
+VALUES
+    ('admin', 'admin', 'admin', NULL , 'admin');

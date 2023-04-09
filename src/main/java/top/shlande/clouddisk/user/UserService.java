@@ -1,88 +1,78 @@
 package top.shlande.clouddisk.user;
 
-import org.springframework.beans.factory.annotation.Autowired;
+import org.apache.shiro.authz.Permission;
+import org.apache.shiro.authz.SimpleRole;
 import org.springframework.stereotype.Service;
+import top.shlande.clouddisk.entity.User;
+import top.shlande.clouddisk.user.jdbc.JdbcUser;
+import top.shlande.clouddisk.user.jdbc.JdbcUserRepository;
+
+import java.util.Objects;
 
 @Service
 public class UserService {
-    private UserDetailRepository userRepository;
-    private UserGroupRepository groupRepository;
-    private SimpleLoginService loginService;
+    private JdbcUserRepository repository;
 
-    public UserService(@Autowired UserDetailRepository userRepository, @Autowired UserGroupRepository groupRepository, @Autowired SimpleLoginService loginService) {
-        this.userRepository = userRepository;
-        this.groupRepository = groupRepository;
-        this.loginService = loginService;
+    public UserService(JdbcUserRepository repository) {
+        this.repository = repository;
     }
 
-
     // 创建用户,只允许管理员操作
-    public UserDetail addUser(String operator, String name, String groupId, UserRole role) {
-        var user = userRepository.get(operator);
-        // 必须保证 group/role 存在
-        UserGroup group = null;
-        if (groupId != null) {
-            group = groupRepository.get(groupId);
+    public User addUser(String operator, String name, String password, SimpleRole role, Permission permission) {
+        var userOptional = repository.findById(operator);
+        if (userOptional.isEmpty()) {
+            throw new DenyException(operator, "operator not found");
         }
-        var newUser = user.createUser(name, group, role);
-        userRepository.create(newUser);
+        var user = userOptional.get().toUserDetail();
+        var newUser = user.createUser(name, password, role, permission);
+        repository.save(new JdbcUser(newUser));
         return newUser;
     }
 
     // 删除用户， 只允许管理员操作
-    public void deleteUser(String operator, String userId) {
-        var user = userRepository.get(operator);
-        var deleted = userRepository.get(userId);
-        if (!user.canDelete(deleted)) {
-            throw new DenyException(operator, DenyException.deleteUserAction);
+    public void deleteUser(String operatorId, String userId) {
+        var operatorOptional = repository.findById(operatorId);
+        var deletedOptional = repository.findById(userId);
+        if (operatorOptional.isEmpty() || deletedOptional.isEmpty()) {
+            throw new NotFoundException("");
         }
-        userRepository.delete(userId);
+        var operator = operatorOptional.get().toUserDetail();
+        var deleted = deletedOptional.get().toUserDetail();
+        if (!operator.canDelete(deleted)) {
+            throw new DenyException(operatorId, DenyException.deleteUserAction);
+        }
+        repository.deleteById(userId);
     }
 
     // 设置用户信息，只允许管理员操作
-    public void setUser(String operatorId, String userId, String name, String context, String groupId, UserRole role) {
-        var operator = userRepository.get(operatorId);
-        var user = userRepository.get(userId);
-        var group = groupRepository.get(groupId);
-        operator.update(user, name, group, role, new UserContext(context));
-        userRepository.update(user);
-    }
-
-    // 获取用户信息
-    public UserDetail getUser(String userId) {
-        return this.userRepository.get(userId);
+    public void setUser(String operatorId, String userId, String name, Permission permission, SimpleRole role) {
+        var operator = getUser(operatorId);
+        var user = getUser(userId);
+        if (!operator.canDelete(user)) {
+            throw new DenyException(operatorId, "deleteUser");
+        }
+        operator.update(user, name, role, permission);
     }
 
     // 修改用户密码
     public void setPassword(String operatorId, String userId, String newPassword) {
-        var operator = userRepository.get(operatorId);
-        var user = userRepository.get(userId);
-        operator.setCredential(user);
-        loginService.update(userId, newPassword);
-        // TODO: 注销所有的会话信息
+        var operator = getUser(operatorId);
+        var user = operator;
+        if (!Objects.equals(operatorId, userId)) {
+            user = getUser(userId);
+        }
+        if (!operator.canSetCredential(user)) {
+            throw new DenyException(operatorId, "setPassword");
+        }
+        user.password = newPassword;
+        this.repository.save(new JdbcUser(user));
     }
 
-    // 添加用户组，只允许管理员操作
-    public String addGroup(String operatorId, String name, String context) {
-        var operator = userRepository.get(operatorId);
-        var newGroup = new UserGroup(operator, name, new UserContext(context));
-        groupRepository.save(newGroup);
-        return newGroup.id;
-    }
-
-    // 设置group信息，只有全局管理员才能操作
-    public void setGroup(String operatorId, String groupId, String name, String context) {
-        var operator = userRepository.get(operatorId);
-        var group = groupRepository.get(groupId);
-        group.edit(operator, name, new UserContext(context));
-        groupRepository.save(group);
-    }
-
-    // 删除用户组，只允许管理员操作
-    public void deleteGroup(String operatorId, String groupId) {
-        var operator = userRepository.get(operatorId);
-        var group = groupRepository.get(groupId);
-        group.delete(operator);
-        this.groupRepository.delete(groupId);
+    private User getUser(String userId) {
+        var userOptional = repository.findById(userId);
+        if (userOptional.isEmpty()) {
+            throw new NotFoundException(userId);
+        }
+        return userOptional.get().toUserDetail();
     }
 }

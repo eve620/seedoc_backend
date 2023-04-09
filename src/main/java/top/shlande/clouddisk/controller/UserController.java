@@ -4,21 +4,24 @@ import jakarta.servlet.http.HttpServletRequest;
 import lombok.Data;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.authc.UsernamePasswordToken;
+import org.apache.shiro.authz.Permission;
+import org.apache.shiro.authz.SimpleRole;
+import org.apache.shiro.authz.permission.WildcardPermission;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
-import top.shlande.clouddisk.user.SimpleLoginService;
+import top.shlande.clouddisk.entity.Permissions;
 import top.shlande.clouddisk.user.UserService;
+
+import java.util.Objects;
 
 @RestController
 @RequestMapping("user")
 public class UserController {
     private final static String CookieKeyUserId = "userId";
     private final UserService userService;
-    private final SimpleLoginService loginService;
 
-    public UserController(@Autowired UserService userService, @Autowired SimpleLoginService loginService) {
+    public UserController(@Autowired UserService userService) {
         this.userService = userService;
-        this.loginService = loginService;
     }
 
     @Data
@@ -43,14 +46,26 @@ public class UserController {
     @PostMapping("/login")
     public void login(@RequestBody LoginRequest login) {
         var subject = SecurityUtils.getSubject();
-        subject.login(new UsernamePasswordToken(login.name,login.password));
+        subject.login(new UsernamePasswordToken(login.name, login.password));
     }
 
     public static class UserRequest {
+        enum Role {
+            admin,
+            user
+        }
+
         public String name;
-        public String group;
-        public UserRole role;
-        public String context;
+        public String password;
+        public Role role;
+        public String permission;
+
+        public SimpleRole getRole() {
+            if (Objects.requireNonNull(this.role) == Role.admin) {
+                return Permissions.admin;
+            }
+            return Permissions.user;
+        }
     }
 
     // 添加用户
@@ -58,7 +73,7 @@ public class UserController {
     public String create(@RequestBody UserRequest request, HttpServletRequest http) {
         // TODO: 使用filter进行拦截，保证一定有cookie
         // TODO:get userid from http
-        return this.userService.addUser(getUserId(http), request.name, request.group, request.role).id;
+        return this.userService.addUser(getUserId(http), request.name, request.password, request.getRole(), new WildcardPermission(request.permission)).id;
     }
 
     // 删除用户
@@ -73,7 +88,7 @@ public class UserController {
     // operator name context
     @PutMapping("/user/{userId}")
     public void setUser(@PathVariable String userId, HttpServletRequest http, @RequestBody UserRequest request) {
-        this.userService.setUser(getUserId(http), userId, request.name, request.context, request.group, request.role);
+        this.userService.setUser(getUserId(http), userId, request.name, new WildcardPermission(request.permission), request.getRole());
     }
 
     // 添加用户组
@@ -82,25 +97,10 @@ public class UserController {
         public String context;
     }
 
-    @PostMapping("/group")
-    public String createGroup(@RequestBody GroupRequest group, HttpServletRequest http) {
-        return this.userService.addGroup(getUserId(http), group.name, group.context);
-    }
-
-    @PutMapping("/group/{groupId}")
-    public void setGroup(@PathVariable String groupId, @RequestBody GroupRequest request, HttpServletRequest http) {
-        this.userService.setGroup(getUserId(http), groupId, request.name, request.context);
-    }
-
-    @DeleteMapping("/group/{groupId}")
-    public void deleteGroup(@PathVariable String groupId, HttpServletRequest http) {
-        this.userService.deleteGroup(getUserId(http), groupId);
-    }
-
     private String getUserId(HttpServletRequest http) {
         var session = http.getSession(false);
         if (session == null) {
-            return  null;
+            return null;
         }
         return (String) session.getAttribute("userId");
     }

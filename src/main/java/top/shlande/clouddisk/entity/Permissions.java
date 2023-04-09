@@ -1,11 +1,11 @@
-package top.shlande.clouddisk.user;
+package top.shlande.clouddisk.entity;
 
 import org.apache.shiro.authz.Permission;
 import org.apache.shiro.authz.SimpleRole;
+import org.apache.shiro.authz.permission.WildcardPermission;
 
 public class Permissions {
-    public final static Permission readAll = new ReadPermission("");
-    public final static Permission writeAll = new ReadPermission("");
+    public final static Permission global = new WildcardPermission("*");
 
     public final static String userRoleName = "user";
     public final static String adminRoleName = "admin";
