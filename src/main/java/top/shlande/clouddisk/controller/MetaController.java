@@ -2,8 +2,10 @@ package top.shlande.clouddisk.controller;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import org.apache.shiro.SecurityUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+import top.shlande.clouddisk.entity.User;
 import top.shlande.clouddisk.storage.CompleteUploadResult;
 import top.shlande.clouddisk.storage.LocalStorageService;
 import top.shlande.clouddisk.user.DenyException;
@@ -84,9 +86,9 @@ public class MetaController {
     @DeleteMapping("/{*key}")
     public void delete(@PathVariable("key") String key, HttpServletRequest http, HttpServletResponse response) {
         key = deleteSlashPrefix(key);
-        var user = this.userService.getUser(getUserId(http));
+        var user = getUser();
         // 检查用户是否有资格
-        if (!user.context.canAccess(key)) {
+        if (!user.canWrite(key)) {
             response.setStatus(400);
             return;
         }
@@ -97,10 +99,10 @@ public class MetaController {
     @PostMapping("/{*key}")
     public void createDir(@PathVariable String key, HttpServletRequest request) {
         key = deleteSlashPrefix(key);
-        var user = userService.getUser(getUserId(request));
         var parent = Path.of(key).getParent();
         var parentKey = parent == null ? "" : parent.toString();
-        if (!user.context.canAccess(parentKey)) {
+        var user = getUser();
+        if (!user.canWrite(parentKey)) {
             throw new DenyException(user.id, "createDir");
         }
         var dir = FileInfo.dir(key);
@@ -109,25 +111,25 @@ public class MetaController {
     }
 
     @GetMapping("/user/{id}")
-    private UserDetail getUser(@PathVariable("id") String id) {
-        return this.userService.getUser(id);
+    private User getUser(@PathVariable("id") String id) {
+        return this.userService.user(id);
     }
 
     @GetMapping("/user/whoami")
-    private UserDetail whoAmI(HttpServletRequest http) {
-        var session = http.getSession(false);
-        if (session == null) {
-            return null;
-        }
-        return this.userService.getUser((String) session.getAttribute("userId"));
+    private User whoAmI(HttpServletRequest http) {
+        return this.userService.user(getUserId());
     }
 
-    private String getUserId(HttpServletRequest http) {
-        var session = http.getSession(false);
-        if (session == null) {
-            return  null;
+    private String getUserId() {
+        var subject = SecurityUtils.getSubject();
+        if (subject == null) {
+            return null;
         }
-        return (String) session.getAttribute("userId");
+        return (String) subject.getPrincipal();
+    }
+
+    private User getUser() {
+        return this.userService.user(this.getUserId());
     }
 
 

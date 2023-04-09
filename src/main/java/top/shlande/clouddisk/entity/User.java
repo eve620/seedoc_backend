@@ -2,6 +2,7 @@ package top.shlande.clouddisk.entity;
 
 import org.apache.shiro.authz.Permission;
 import org.apache.shiro.authz.SimpleRole;
+import org.apache.shiro.authz.permission.WildcardPermission;
 import top.shlande.clouddisk.user.DenyException;
 
 import java.util.UUID;
@@ -27,6 +28,10 @@ public class User {
         return new User(
                 UUID.randomUUID().toString(), name, password, defaultCreateNormalUser(role), null
         );
+    }
+
+    public boolean canWrite(String dir) {
+        return this.permission.implies(new WildcardPermission(dir));
     }
 
     // 当前用户更新其他用户信息

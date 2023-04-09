@@ -17,6 +17,10 @@ public class UserService {
         this.repository = repository;
     }
 
+    public User user(String userId) {
+        return getUser(userId);
+    }
+
     // 创建用户,只允许管理员操作
     public User addUser(String operator, String name, String password, SimpleRole role, Permission permission) {
         var userOptional = repository.findById(operator);
