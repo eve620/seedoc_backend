@@ -14,6 +14,8 @@ import top.shlande.clouddisk.vfs.FileInfo;
 import top.shlande.clouddisk.vfs.VFSService;
 
 import java.io.IOException;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
 import java.util.List;
 
@@ -47,15 +49,15 @@ public class MetaController {
             return;
         }
         response.setStatus(HttpServletResponse.SC_MOVED_TEMPORARILY);
-        response.setHeader("Location", "/file/" + fileInfo.etag);
+        response.setHeader("Location", "/file/" + fileInfo.etag + "?filename=" + URLEncoder.encode(fileInfo.name, StandardCharsets.UTF_8));
     }
 
     @PutMapping("/{*key}")
-    public String createUpload(@PathVariable String key,HttpServletRequest request) throws Exception {
+    public String createUpload(@PathVariable String key, HttpServletRequest request) throws Exception {
         // 判断是否能够写入
         var user = getUser(request);
         if (!user.canWrite(key)) {
-            throw new DenyException(user.id,"write");
+            throw new DenyException(user.id, "write");
         }
         key = deleteSlashPrefix(key);
         // TODO: add owner service
@@ -128,7 +130,7 @@ public class MetaController {
     private String getUserId(HttpServletRequest http) {
         var session = http.getSession(false);
         if (session == null) {
-            throw new DenyException("","not login");
+            throw new DenyException("", "not login");
         }
         return (String) session.getAttribute("userId");
     }

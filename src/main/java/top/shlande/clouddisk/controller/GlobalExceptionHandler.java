@@ -9,6 +9,7 @@ import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExcep
 import top.shlande.clouddisk.user.BadRequestException;
 import top.shlande.clouddisk.user.DenyException;
 import top.shlande.clouddisk.user.NotFoundException;
+import top.shlande.clouddisk.vfs.NilDirException;
 
 @ControllerAdvice
 @RestController
@@ -28,7 +29,7 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
     }
 
     @ResponseStatus(value = HttpStatus.BAD_REQUEST, reason = "bad request")
-    @ExceptionHandler({NotFoundException.class, BadRequestException.class})
+    @ExceptionHandler({NotFoundException.class, NilDirException.class, BadRequestException.class})
     public String badRequest(Exception exception) {
         return exception.toString();
     }

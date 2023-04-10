@@ -33,7 +33,11 @@ public class FileController {
     // For more injectable argument, please refer to spring doc:
     //  https://docs.spring.io/spring-framework/docs/current/reference/html/web.html#mvc-ann-arguments
     @GetMapping("/{etag}")
-    public void get(@PathVariable String etag, HttpServletResponse response) throws IOException {
+    public void get(@PathVariable String etag, @RequestParam(required = false) String filename, HttpServletResponse response) throws IOException {
+        if (filename != null) {
+            response.setHeader("Content-Disposition", "attachment;filename=" + filename);
+        }
+        response.setHeader("Etag", etag);
         storageService.getObject(etag).transferTo(response.getOutputStream());
     }
 
