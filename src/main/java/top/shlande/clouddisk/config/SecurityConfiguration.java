@@ -1,12 +1,14 @@
 package top.shlande.clouddisk.config;
 
-import org.apache.shiro.mgt.DefaultSecurityManager;
 import org.apache.shiro.mgt.SecurityManager;
+import org.apache.shiro.mgt.SessionsSecurityManager;
 import org.apache.shiro.realm.Realm;
 import org.apache.shiro.realm.jdbc.JdbcRealm;
+import org.apache.shiro.spring.web.ShiroFilterFactoryBean;
 import org.apache.shiro.spring.web.config.DefaultShiroFilterChainDefinition;
 import org.apache.shiro.spring.web.config.ShiroFilterChainDefinition;
-import org.apache.shiro.util.JdbcUtils;
+import org.apache.shiro.util.ThreadContext;
+import org.apache.shiro.web.mgt.DefaultWebSecurityManager;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -14,8 +16,6 @@ import top.shlande.clouddisk.user.jdbc.JdbcUserRepository;
 
 import javax.sql.DataSource;
 import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.*;
 
@@ -49,16 +49,24 @@ public class SecurityConfiguration {
     }
 
     @Bean
-    public SecurityManager securityManager(@Autowired Realm realm) {
-        return new DefaultSecurityManager(realm);
+    public SessionsSecurityManager securityManager(@Autowired Realm realm) {
+        var manager =  new DefaultWebSecurityManager(realm);
+        // https://blog.csdn.net/qq_41618008/article/details/128552205
+        return manager;
     }
-
 
     @Bean
-    public ShiroFilterChainDefinition shiroFilter() {
-        var chainDefine = new DefaultShiroFilterChainDefinition();
-        chainDefine.addPathDefinition("/**", "anno");
-        return chainDefine;
+    public ShiroFilterChainDefinition shiroFilterChainDefinition() {
+        DefaultShiroFilterChainDefinition definition = new DefaultShiroFilterChainDefinition();
+        definition.addPathDefinition("/**", "anon");
+        return definition;
     }
 
+    @Bean
+    public ShiroFilterFactoryBean filterFactoryBean(@Autowired SecurityManager manager,@Autowired ShiroFilterChainDefinition definition) {
+        var filter = new ShiroFilterFactoryBean();
+        filter.setSecurityManager(manager);
+        filter.setFilterChainDefinitionMap(definition.getFilterChainMap());
+        return filter;
+    }
 }
