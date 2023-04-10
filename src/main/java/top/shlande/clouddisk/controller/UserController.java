@@ -1,6 +1,8 @@
 package top.shlande.clouddisk.controller;
 
+import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.Data;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -39,11 +41,18 @@ public class UserController {
 
     // 用户登录
     @PostMapping("/login")
-    public void login(@RequestBody LoginRequest login, HttpServletRequest request) {
+    public void login(@RequestBody LoginRequest login, HttpServletRequest request, HttpServletResponse response) {
         if (!this.userService.login(login.name, login.password)) {
             throw new NotFoundException(login.name);
         }
-        request.getSession(true).setAttribute("userId", login.name);
+        var session  = request.getSession(true);
+        session.setAttribute("userId", login.name);
+        var cookie = new Cookie("JSESSIONID",session.getId());
+        cookie.setPath("/");
+        cookie.setHttpOnly(false);
+        cookie.setSecure(true);
+        cookie.setAttribute("SameSite","None");
+        response.addCookie(cookie);
     }
 
     public static class UserRequest {

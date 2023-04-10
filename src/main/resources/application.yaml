@@ -12,6 +12,10 @@ logging:
   level:
     sql: trace
 server:
+  servlet:
+    session:
+      cookie:
+        http-only: false
   error:
     include-stacktrace: never
   http2:
