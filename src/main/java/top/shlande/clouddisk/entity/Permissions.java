@@ -7,8 +7,8 @@ import org.apache.shiro.authz.permission.WildcardPermission;
 public class Permissions {
     public final static Permission global = new WildcardPermission("*");
 
-    public final static String userRoleName = "user";
-    public final static String adminRoleName = "admin";
+    public final static String userRoleName = "USER";
+    public final static String adminRoleName = "ADMIN";
 
     public final static SimpleRole admin = new SimpleRole(adminRoleName);
     public final static SimpleRole user = new SimpleRole(userRoleName);

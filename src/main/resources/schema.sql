@@ -14,17 +14,18 @@ CREATE TABLE IF NOT EXISTS files
 );
 
 
-CREATE TABLE `users`
+CREATE TABLE IF NOT EXISTS `users`
 (
-    `id`            int          NOT NULL AUTO_INCREMENT PRIMARY KEY,
-    `username`      varchar(128) NOT NULL UNIQUE,
-    `password`      varchar(128) NOT NULL,
+    `id`            varchar(40)   NOT NULL PRIMARY KEY,
+    `username`      varchar(128)  NOT NULL UNIQUE,
+    `password`      varchar(128)  NOT NULL,
+    `permission`    varchar(1024) NOT NULL,
     `password_salt` varchar(128),
-    `role`          varchar(128) NOT NULL
+    `role`          enum('ADMIN','USER')  NOT NULL,
+    INDEX `idx_username` (username)
 );
 
 
 INSERT IGNORE INTO `users`
-    (`id`, `username`, `password`, `password_salt`, `role`)
-VALUES
-    ('admin', 'admin', 'admin', NULL , 'admin');
+    (`id`, `username`, `password`, `password_salt`, `role`, `permission`)
+VALUES ('admin', 'admin', 'admin', NULL, 'ADMIN', '*');

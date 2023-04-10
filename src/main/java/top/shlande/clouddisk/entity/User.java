@@ -25,8 +25,11 @@ public class User {
 
     public User createUser(String name, String password, SimpleRole role, Permission permission) {
         onlyAdminCanCreateUser();
+        if (!isContextAdmin(permission)) {
+            throw new DenyException(this.id,"createUser");
+        }
         return new User(
-                UUID.randomUUID().toString(), name, password, defaultCreateNormalUser(role), null
+                UUID.randomUUID().toString(), name, password, defaultCreateNormalUser(role), permission
         );
     }
 
@@ -83,7 +86,7 @@ public class User {
     }
 
     public boolean canDelete(User user) {
-        return user != null && isContextAdmin(user.permission);
+        return user != null && (isGlobalAdmin() || isContextAdmin(user.permission) && !user.isAdmin());
     }
 
     private SimpleRole defaultCreateNormalUser(SimpleRole role) {

@@ -9,7 +9,6 @@ import top.shlande.clouddisk.user.jdbc.JdbcUserRepository;
 
 import java.util.Objects;
 
-@Service
 public class UserService {
     private JdbcUserRepository repository;
 
@@ -29,7 +28,7 @@ public class UserService {
         }
         var user = userOptional.get().toUserDetail();
         var newUser = user.createUser(name, password, role, permission);
-        repository.save(new JdbcUser(newUser));
+        repository.insert(new JdbcUser(newUser));
         return newUser;
     }
 

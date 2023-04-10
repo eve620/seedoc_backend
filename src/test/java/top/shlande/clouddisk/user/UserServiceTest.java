@@ -62,7 +62,8 @@ public class UserServiceTest {
         // 普通管理员删除用户
         this.userService.deleteUser(admin.id, user.id);
         // 普通管理员创建管理员
-        this.userService.addUser(admin.id, "shouldNotSuccessAdded", adminPassword, adminUserRole, adminPermission);
+        var admin2 = this.userService.addUser(admin.id, "shouldNotSuccessAdded", adminPassword, adminUserRole, adminPermission);
+        this.userService.deleteUser(superadminId,admin2.id);
         // 普通管理员删除管理员
         gotError = false;
         try {
@@ -73,5 +74,6 @@ public class UserServiceTest {
         Assert.isTrue(gotError, "should got error");
         // 超级管理员删除管理员
         this.userService.deleteUser(superadminId, admin.id);
+
     }
 }
