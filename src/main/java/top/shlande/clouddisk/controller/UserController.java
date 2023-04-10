@@ -55,6 +55,11 @@ public class UserController {
         response.addCookie(cookie);
     }
 
+    @GetMapping("/whoami")
+    public String whoami(HttpServletRequest request) {
+        return getUserId(request);
+    }
+
     public static class UserRequest {
         public String name;
         public String password;
