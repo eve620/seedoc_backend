@@ -12,6 +12,8 @@ logging:
   level:
     sql: trace
 server:
+  error:
+    include-stacktrace: never
   http2:
     enabled: true
   ssl:

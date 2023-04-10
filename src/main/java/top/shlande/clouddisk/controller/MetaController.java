@@ -8,6 +8,7 @@ import top.shlande.clouddisk.entity.User;
 import top.shlande.clouddisk.storage.CompleteUploadResult;
 import top.shlande.clouddisk.storage.LocalStorageService;
 import top.shlande.clouddisk.user.DenyException;
+import top.shlande.clouddisk.user.NotFoundException;
 import top.shlande.clouddisk.user.UserService;
 import top.shlande.clouddisk.vfs.FileInfo;
 import top.shlande.clouddisk.vfs.VFSService;
@@ -50,7 +51,12 @@ public class MetaController {
     }
 
     @PutMapping("/{*key}")
-    public String createUpload(@PathVariable String key, HttpServletRequest request) throws Exception {
+    public String createUpload(@PathVariable String key,HttpServletRequest request) throws Exception {
+        // 判断是否能够写入
+        var user = getUser(request);
+        if (!user.canWrite(key)) {
+            throw new DenyException(user.id,"write");
+        }
         key = deleteSlashPrefix(key);
         // TODO: add owner service
         var owner = "testOwner";
@@ -122,7 +128,7 @@ public class MetaController {
     private String getUserId(HttpServletRequest http) {
         var session = http.getSession(false);
         if (session == null) {
-            return null;
+            throw new DenyException("","not login");
         }
         return (String) session.getAttribute("userId");
     }
