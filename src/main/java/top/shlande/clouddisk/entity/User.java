@@ -1,32 +1,34 @@
 package top.shlande.clouddisk.entity;
 
-import org.apache.shiro.authz.Permission;
-import org.apache.shiro.authz.SimpleRole;
-import org.apache.shiro.authz.permission.WildcardPermission;
 import top.shlande.clouddisk.user.DenyException;
 
 import java.util.UUID;
 
 public class User {
+    public enum Role {
+        ADMIN,
+        USER,
+    }
+
     public String id;
     public String name;
     public String password;
-    public SimpleRole role;
-    public Permission permission;
+    public Role role;
+    public UserContext context;
 
-    public User(String id, String name, String password, SimpleRole role, Permission permission) {
+    public User(String id, String name, String password, Role role, UserContext permission) {
         this.id = id;
         this.name = name;
         this.password = password;
         this.role = role;
-        this.permission = permission;
+        this.context = permission;
     }
 
 
-    public User createUser(String name, String password, SimpleRole role, Permission permission) {
+    public User createUser(String name, String password, Role role, UserContext permission) {
         onlyAdminCanCreateUser();
         if (!isContextAdmin(permission)) {
-            throw new DenyException(this.id,"createUser");
+            throw new DenyException(this.id, "createUser");
         }
         return new User(
                 UUID.randomUUID().toString(), name, password, defaultCreateNormalUser(role), permission
@@ -34,11 +36,11 @@ public class User {
     }
 
     public boolean canWrite(String dir) {
-        return this.permission.implies(new WildcardPermission(dir));
+        return this.context.canAccess(dir);
     }
 
     // 当前用户更新其他用户信息
-    public void update(User user, String name, SimpleRole role, Permission permission) {
+    public void update(User user, String name, Role role, UserContext permission) {
         permission = defaultCreateSamePermissionUser(permission);
         if (this.isContextAdmin(permission)) {
             user.setWithDefault(name, role, permission);
@@ -48,10 +50,10 @@ public class User {
 
     // 判断用户是否可以更改其他账户的登录信息
     public boolean canSetCredential(User user) {
-        return this.isContextAdmin(user.permission) || this.id.equals(user.id);
+        return this.isContextAdmin(user.context) || this.id.equals(user.id);
     }
 
-    private void setWithDefault(String name, SimpleRole role, Permission context) {
+    private void setWithDefault(String name, Role role, UserContext context) {
         if (name != null) {
             this.name = name;
         }
@@ -59,7 +61,7 @@ public class User {
             this.role = role;
         }
         if (context != null) {
-            this.permission = context;
+            this.context = context;
         }
     }
 
@@ -69,9 +71,9 @@ public class User {
         }
     }
 
-    private Permission defaultCreateSamePermissionUser(Permission permission) {
+    private UserContext defaultCreateSamePermissionUser(UserContext permission) {
         if (permission == null) {
-            permission = this.permission;
+            permission = this.context;
         }
         // 如果当前用户为全局管理员，则可以将用户安排给任何组
         if (isGlobalAdmin()) {
@@ -86,24 +88,24 @@ public class User {
     }
 
     public boolean canDelete(User user) {
-        return user != null && (isGlobalAdmin() || isContextAdmin(user.permission) && !user.isAdmin());
+        return user != null && (isGlobalAdmin() || isContextAdmin(user.context) && !user.isAdmin());
     }
 
-    private SimpleRole defaultCreateNormalUser(SimpleRole role) {
-        return role == null ? Permissions.user : role;
+    private Role defaultCreateNormalUser(Role role) {
+        return role == null ? Role.USER : role;
     }
 
     public boolean isGlobalAdmin() {
-        return isContextAdmin(Permissions.global);
+        return isContextAdmin(UserContext.global);
     }
 
     public boolean isAdmin() {
-        return this.role.equals(Permissions.admin);
+        return this.role.equals(Role.ADMIN);
     }
 
     // 如果 groupId 为空，返回false
-    private boolean isContextAdmin(Permission context) {
-        return this.isAdmin() && this.permission.implies(context);
+    private boolean isContextAdmin(UserContext context) {
+        return this.isAdmin() && this.context.canAccess(context.toString());
     }
 
 }

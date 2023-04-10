@@ -23,9 +23,6 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-web'
     implementation 'org.springframework.boot:spring-boot-starter-data-jdbc'
 
-    implementation 'org.apache.shiro:shiro-spring-boot-web-starter:2.0.0-alpha-1'
-    implementation 'org.apache.shiro:shiro-jakarta-ee:2.0.0-alpha-1'
-
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
     compileOnly 'org.projectlombok:lombok'
     developmentOnly 'org.springframework.boot:spring-boot-devtools'

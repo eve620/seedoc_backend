@@ -1,26 +1,19 @@
 package top.shlande.clouddisk.user.jdbc;
 
 import lombok.NoArgsConstructor;
-import org.apache.shiro.authz.SimpleRole;
-import org.apache.shiro.authz.permission.WildcardPermission;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.relational.core.mapping.Table;
-import top.shlande.clouddisk.entity.Permissions;
 import top.shlande.clouddisk.entity.User;
+import top.shlande.clouddisk.entity.UserContext;
 
 
 @Table("users")
 @NoArgsConstructor
 public class JdbcUser {
-    public enum Role {
-        ADMIN,
-        USER,
-    }
     @Id
     public String id;
     public String username;
     public String password;
-    public String passwordSalt;
     public String role;
     public String permission;
 
@@ -28,29 +21,29 @@ public class JdbcUser {
         this.id = detail.id;
         this.username = detail.name;
         this.password = detail.password;
-        switch (detail.role.getName()) {
-            case Permissions.userRoleName -> {
+        switch (detail.role) {
+            case USER -> {
                 this.role = "USER";
             }
-            case Permissions.adminRoleName -> {
+            case ADMIN -> {
                 this.role = "ADMIN";
             }
         }
-        this.permission = detail.permission.toString();
+        this.permission = detail.context.toString();
     }
 
     public User toUserDetail() {
-        SimpleRole role = null;
+        User.Role role = null;
         switch (this.role) {
             case "USER" -> {
-                role = Permissions.user;
+                role = User.Role.USER;
             }
             case "ADMIN" -> {
-                role = Permissions.admin;
+                role = User.Role.ADMIN;
             }
         }
         return new User(
-                this.id, this.username, this.password, role, new WildcardPermission(this.permission)
+                this.id, this.username, this.password, role, new UserContext(permission)
         );
     }
 }

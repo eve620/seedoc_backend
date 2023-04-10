@@ -12,11 +12,6 @@ import java.security.NoSuchAlgorithmException;
 
 @Configuration
 public class LocalStorageConfigurator {
-//    @Bean
-//    public LocalStorageService localStorageServiceImpl(String path) {
-//        return new LocalStorageServiceImpl(path);
-//    }
-
     // only in dev environment
     @Bean
     public LocalStorageService mocklocalStorageService() throws IOException, NoSuchAlgorithmException {

@@ -16,16 +16,15 @@ CREATE TABLE IF NOT EXISTS files
 
 CREATE TABLE IF NOT EXISTS `users`
 (
-    `id`            varchar(40)   NOT NULL PRIMARY KEY,
-    `username`      varchar(128)  NOT NULL UNIQUE,
-    `password`      varchar(128)  NOT NULL,
-    `permission`    varchar(1024) NOT NULL,
-    `password_salt` varchar(128),
-    `role`          enum('ADMIN','USER')  NOT NULL,
+    `id`         varchar(40)           NOT NULL PRIMARY KEY,
+    `username`   varchar(128)          NOT NULL UNIQUE,
+    `password`   varchar(128)          NOT NULL,
+    `permission` varchar(1024)         NOT NULL,
+    `role`       enum ('ADMIN','USER') NOT NULL,
     INDEX `idx_username` (username)
 );
 
 
 INSERT IGNORE INTO `users`
-    (`id`, `username`, `password`, `password_salt`, `role`, `permission`)
-VALUES ('admin', 'admin', 'admin', NULL, 'ADMIN', '*');
+    (`id`, `username`, `password`, `role`, `permission`)
+VALUES ('admin', 'admin', 'admin', 'ADMIN', '*');

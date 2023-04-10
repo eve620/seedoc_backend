@@ -1,9 +1,7 @@
 package top.shlande.clouddisk.user;
 
-import org.apache.shiro.authz.Permission;
-import org.apache.shiro.authz.SimpleRole;
-import org.springframework.stereotype.Service;
 import top.shlande.clouddisk.entity.User;
+import top.shlande.clouddisk.entity.UserContext;
 import top.shlande.clouddisk.user.jdbc.JdbcUser;
 import top.shlande.clouddisk.user.jdbc.JdbcUserRepository;
 
@@ -21,7 +19,7 @@ public class UserService {
     }
 
     // 创建用户,只允许管理员操作
-    public User addUser(String operator, String name, String password, SimpleRole role, Permission permission) {
+    public User addUser(String operator, String name, String password, User.Role role, UserContext permission) {
         var userOptional = repository.findById(operator);
         if (userOptional.isEmpty()) {
             throw new DenyException(operator, "operator not found");
@@ -48,7 +46,7 @@ public class UserService {
     }
 
     // 设置用户信息，只允许管理员操作
-    public void setUser(String operatorId, String userId, String name, Permission permission, SimpleRole role) {
+    public void setUser(String operatorId, String userId, String name, UserContext permission, User.Role role) {
         var operator = getUser(operatorId);
         var user = getUser(userId);
         if (!operator.canDelete(user)) {
@@ -77,5 +75,10 @@ public class UserService {
             throw new NotFoundException(userId);
         }
         return userOptional.get().toUserDetail();
+    }
+
+    public boolean login(String userId, String password) {
+        var user  = getUser(userId);
+        return Objects.equals(user.password, password);
     }
 }

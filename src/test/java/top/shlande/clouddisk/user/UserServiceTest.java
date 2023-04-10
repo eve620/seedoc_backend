@@ -1,12 +1,12 @@
 package top.shlande.clouddisk.user;
 
 
-import org.apache.shiro.authz.permission.WildcardPermission;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.util.Assert;
-import top.shlande.clouddisk.entity.Permissions;
+import top.shlande.clouddisk.entity.User;
+import top.shlande.clouddisk.entity.UserContext;
 
 @SpringBootTest
 public class UserServiceTest {
@@ -22,15 +22,15 @@ public class UserServiceTest {
 
         // 超级管理员添加普通管理员
         var adminUserName = "测试管理员";
-        var adminUserRole = Permissions.admin;
-        var adminPermission = new WildcardPermission("admin/*");
+        var adminUserRole = User.Role.ADMIN;
+        var adminPermission = new UserContext("admin/*");
         var adminPassword = "admin";
         var admin = this.userService.addUser(superadminId, adminUserName, adminPassword, adminUserRole, adminPermission);
 
         // 普通管理员添加普通用户
         var normalUserName = "测试用户";
-        var normalUserRole = Permissions.user;
-        var normalUserContext = new WildcardPermission("admin/*");
+        var normalUserRole = User.Role.USER;
+        var normalUserContext = new UserContext("admin/*");
         var normalUserPassword = "user";
         var user = this.userService.addUser(admin.id, normalUserName, normalUserPassword, normalUserRole, normalUserContext);
 

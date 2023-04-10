@@ -2,7 +2,6 @@ package top.shlande.clouddisk.controller;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import org.apache.shiro.SecurityUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import top.shlande.clouddisk.entity.User;
@@ -86,7 +85,7 @@ public class MetaController {
     @DeleteMapping("/{*key}")
     public void delete(@PathVariable("key") String key, HttpServletRequest http, HttpServletResponse response) {
         key = deleteSlashPrefix(key);
-        var user = getUser();
+        var user = getUser(http);
         // 检查用户是否有资格
         if (!user.canWrite(key)) {
             response.setStatus(400);
@@ -101,7 +100,7 @@ public class MetaController {
         key = deleteSlashPrefix(key);
         var parent = Path.of(key).getParent();
         var parentKey = parent == null ? "" : parent.toString();
-        var user = getUser();
+        var user = getUser(request);
         if (!user.canWrite(parentKey)) {
             throw new DenyException(user.id, "createDir");
         }
@@ -111,25 +110,21 @@ public class MetaController {
     }
 
     @GetMapping("/user/{id}")
-    private User getUser(@PathVariable("id") String id) {
-        return this.userService.user(id);
+    private User getUser(@PathVariable("id") HttpServletRequest http) {
+        return this.userService.user(getUserId(http));
     }
 
     @GetMapping("/user/whoami")
     private User whoAmI(HttpServletRequest http) {
-        return this.userService.user(getUserId());
+        return this.userService.user(getUserId(http));
     }
 
-    private String getUserId() {
-        var subject = SecurityUtils.getSubject();
-        if (subject == null) {
+    private String getUserId(HttpServletRequest http) {
+        var session = http.getSession(false);
+        if (session == null) {
             return null;
         }
-        return (String) subject.getPrincipal();
-    }
-
-    private User getUser() {
-        return this.userService.user(this.getUserId());
+        return (String) session.getAttribute("userId");
     }
 
 
