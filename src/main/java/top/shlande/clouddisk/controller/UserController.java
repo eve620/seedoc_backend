@@ -45,19 +45,37 @@ public class UserController {
         if (!this.userService.login(login.name, login.password)) {
             throw new NotFoundException(login.name);
         }
-        var session  = request.getSession(true);
+        var session = request.getSession(true);
         session.setAttribute("userId", login.name);
-        var cookie = new Cookie("JSESSIONID",session.getId());
+        var cookie = new Cookie("JSESSIONID", session.getId());
         cookie.setPath("/");
         cookie.setHttpOnly(false);
         cookie.setSecure(true);
-        cookie.setAttribute("SameSite","None");
+        cookie.setAttribute("SameSite", "None");
         response.addCookie(cookie);
     }
 
     @GetMapping("/whoami")
     public String whoami(HttpServletRequest request) {
         return getUserId(request);
+    }
+
+    // 获取用户信息
+    @GetMapping("/{id}")
+    public UserInfo info(@PathVariable("id") String id) {
+        return new UserInfo(this.userService.user(id));
+    }
+
+    public static class UserInfo {
+        public String name;
+        public User.Role role;
+        public String permission;
+
+        public UserInfo(User user) {
+            this.name = user.name;
+            this.role = user.role;
+            this.permission = user.context.toString();
+        }
     }
 
     public static class UserRequest {
