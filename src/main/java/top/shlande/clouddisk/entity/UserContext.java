@@ -34,7 +34,8 @@ public class UserContext {
     // TODO: 中文处理问题
     public boolean canAccess(String path) {
         for (String context : this.context) {
-            if (Objects.equals(context, "*") || Objects.equals(path, context) || path.indexOf(context + "/") <= 1) {
+            var index = path.indexOf(context + "/");
+            if (Objects.equals(context, "*") || Objects.equals(path, context) || (index <= 1 && index >= 0)) {
                 return true;
             }
         }

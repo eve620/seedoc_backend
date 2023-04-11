@@ -4,6 +4,7 @@ import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import top.shlande.clouddisk.entity.User;
@@ -56,8 +57,9 @@ public class UserController {
     }
 
     @GetMapping("/whoami")
-    public String whoami(HttpServletRequest request) {
-        return getUserId(request);
+    public UserInfo whoami(HttpServletRequest request) {
+        var user = this.userService.user(getUserId(request));
+        return new UserInfo(user);
     }
 
     // 获取用户信息
@@ -66,7 +68,10 @@ public class UserController {
         return new UserInfo(this.userService.user(id));
     }
 
+    @Data
+    @NoArgsConstructor
     public static class UserInfo {
+        public String id;
         public String name;
         public User.Role role;
         public String permission;
