@@ -3,10 +3,13 @@ spring:
     url: jdbc:mysql://localhost:3306/clouddisk
     username: root
     password: xiaopengfei
+#  mvc:
+#    hiddenmethod:
+#      filter:
+#        enabled: false
   sql:
     init:
       mode: always
-
 
 logging:
   level:

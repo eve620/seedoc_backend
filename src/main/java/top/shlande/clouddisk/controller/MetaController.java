@@ -53,8 +53,17 @@ public class MetaController {
     }
 
     @PutMapping("/{*key}")
-    public String createUpload(@PathVariable String key, HttpServletRequest request) throws Exception {
+    public String createOrDelete(@PathVariable String key, @RequestParam(required = false,defaultValue = "false") Boolean delete, HttpServletRequest request) throws Exception {
+        if (delete) {
+            delete(key,request);
+            return "";
+        }
+        return create(key,request);
+    }
+
+    public String create(String key,HttpServletRequest request) throws Exception {
         // 判断是否能够写入
+        key = deleteSlashPrefix(key);
         var user = getUser(request);
         if (!user.canWrite(key)) {
             throw new DenyException(user.id, "write");
@@ -73,6 +82,16 @@ public class MetaController {
         return fileInfo.uploadId;
     }
 
+    public void delete(String key, HttpServletRequest http) {
+        key = deleteSlashPrefix(key);
+        var user = getUser(http);
+        // 检查用户是否有资格
+        if (!user.canWrite(key)) {
+            throw new DenyException(user.id,"delete");
+        }
+        this.vfsService.delete(key);
+    }
+
     // TODO：如何完成 ? 匹配？
     // @PutMapping("/{uploadId}?complete")
     @PutMapping("/{uploadId}/complete")
@@ -88,18 +107,6 @@ public class MetaController {
             vfsService.complete(uploadId, result.etag, result.size);
         }
         return result.etag;
-    }
-
-    @DeleteMapping("/{*key}")
-    public void delete(@PathVariable("key") String key, HttpServletRequest http, HttpServletResponse response) {
-        key = deleteSlashPrefix(key);
-        var user = getUser(http);
-        // 检查用户是否有资格
-        if (!user.canWrite(key)) {
-            response.setStatus(400);
-            return;
-        }
-        this.vfsService.delete(key);
     }
 
     // TODO: 重新调整一下地址
