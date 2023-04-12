@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import top.shlande.clouddisk.entity.User;
 import top.shlande.clouddisk.entity.UserContext;
+import top.shlande.clouddisk.user.DenyException;
 import top.shlande.clouddisk.user.NotFoundException;
 import top.shlande.clouddisk.user.UserService;
 
@@ -114,7 +115,7 @@ public class UserController {
     private String getUserId(HttpServletRequest http) {
         var session = http.getSession(false);
         if (session == null) {
-            return null;
+            throw new DenyException("", "not login");
         }
         return (String) session.getAttribute("userId");
     }

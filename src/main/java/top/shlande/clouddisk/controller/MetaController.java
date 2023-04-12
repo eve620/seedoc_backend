@@ -53,15 +53,24 @@ public class MetaController {
     }
 
     @PutMapping("/{*key}")
-    public String createOrDelete(@PathVariable String key, @RequestParam(required = false,defaultValue = "false") Boolean delete, HttpServletRequest request) throws Exception {
+    public String createOrDelete(@PathVariable String key, @RequestParam(required = false, defaultValue = "false") Boolean delete, HttpServletRequest request) throws Exception {
         if (delete) {
-            delete(key,request);
+            delete(key, request);
             return "";
         }
-        return create(key,request);
+        return create(key, request);
     }
 
-    public String create(String key,HttpServletRequest request) throws Exception {
+    @GetMapping("/rename")
+    public void rename(HttpServletRequest http, @RequestParam("src") String src, @RequestParam("dst") String dst) {
+        var user = getUser(http);
+        if (!user.canWrite(src)) {
+            throw new DenyException(user.id, "write to " + dst);
+        }
+        this.vfsService.rename(src, dst);
+    }
+
+    public String create(String key, HttpServletRequest request) throws Exception {
         // 判断是否能够写入
         key = deleteSlashPrefix(key);
         var user = getUser(request);
@@ -70,7 +79,7 @@ public class MetaController {
         }
         key = deleteSlashPrefix(key);
         // TODO: add owner service
-        var owner = "testOwner";
+        var owner = getUserId(request);
         var filePath = Path.of(key);
         var fileInfo = new FileInfo();
         fileInfo.contentType = request.getHeader("Content-Type");
@@ -87,7 +96,7 @@ public class MetaController {
         var user = getUser(http);
         // 检查用户是否有资格
         if (!user.canWrite(key)) {
-            throw new DenyException(user.id,"delete");
+            throw new DenyException(user.id, "delete");
         }
         this.vfsService.delete(key);
     }

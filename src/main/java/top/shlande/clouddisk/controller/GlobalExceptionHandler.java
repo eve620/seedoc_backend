@@ -10,6 +10,7 @@ import top.shlande.clouddisk.user.BadRequestException;
 import top.shlande.clouddisk.user.DenyException;
 import top.shlande.clouddisk.user.NotFoundException;
 import top.shlande.clouddisk.vfs.NilDirException;
+import top.shlande.clouddisk.vfs.NotEmptyException;
 
 @ControllerAdvice
 @RestController
@@ -29,7 +30,7 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
     }
 
     @ResponseStatus(value = HttpStatus.BAD_REQUEST, reason = "bad request")
-    @ExceptionHandler({NotFoundException.class, NilDirException.class, BadRequestException.class})
+    @ExceptionHandler({NotFoundException.class, NotEmptyException.class, NilDirException.class, BadRequestException.class})
     public String badRequest(Exception exception) {
         return exception.toString();
     }
