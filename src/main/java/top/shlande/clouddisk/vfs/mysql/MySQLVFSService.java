@@ -3,6 +3,7 @@ package top.shlande.clouddisk.vfs.mysql;
 import org.springframework.beans.factory.annotation.Autowired;
 import top.shlande.clouddisk.vfs.FileInfo;
 import top.shlande.clouddisk.vfs.NilDirException;
+import top.shlande.clouddisk.vfs.NotEmptyException;
 import top.shlande.clouddisk.vfs.VFSService;
 
 import java.io.File;
@@ -60,6 +61,27 @@ public class MySQLVFSService implements VFSService {
             result.add(info.toFileInfo());
         }
         return result;
+    }
+
+    @Override
+    public void rename(String src, String dst) {
+        var parentSrc = getParent(src);
+        var nameSrc = getFilename(src);
+        // 查看src文件是否存在
+        var srcFile = this.repository.getByPath(parentSrc,nameSrc);
+        if (srcFile == null) {
+            throw new NilDirException(src);
+        }
+        // 查看dst文件是否存在
+        var parentDst = getParent(dst);
+        var nameDst = getFilename(dst);
+        // 查看src文件是否存在
+        var dstFile = this.repository.getByPath(parentDst,nameDst);
+        if (dstFile != null) {
+            throw new NotEmptyException(dst);
+        }
+        this.repository.moveDir(src,dst);
+        this.repository.moveFile(parentDst,nameDst,srcFile.id);
     }
 
     private List<MySQLFileInfo> walkDir(String dirKey) {

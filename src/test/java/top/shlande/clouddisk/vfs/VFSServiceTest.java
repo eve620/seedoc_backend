@@ -77,4 +77,16 @@ public class VFSServiceTest {
         service.delete("");
         Assert.isTrue(service.list("", 50, 0).size() == 0, "should be 0 object in testDir path");
     }
+
+    @Test
+    public void testMove() {
+        var dst = "教学办公室/2023年/制度文";
+        var src = "教学办公室/2023年/制度文件";
+        this.service.rename(src,dst);
+        Assert.isTrue(this.service.list(src,50,0).size() == 0, "shoould have file");
+        Assert.isTrue(this.service.list(dst,50,0).size() > 0, "shoould have file");
+        // 还原文件
+        this.service.rename(dst,src);
+
+    }
 }

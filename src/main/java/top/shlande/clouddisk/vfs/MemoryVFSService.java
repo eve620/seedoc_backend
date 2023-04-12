@@ -17,6 +17,9 @@ public class MemoryVFSService implements VFSService {
     }
 
     @Override
+    public void rename(String src, String dst) {}
+
+    @Override
     public FileInfo get(String key) {
         return null;
     }

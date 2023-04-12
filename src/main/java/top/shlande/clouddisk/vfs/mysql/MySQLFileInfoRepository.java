@@ -12,6 +12,14 @@ import java.util.List;
 public interface MySQLFileInfoRepository extends CrudRepository<MySQLFileInfo, Long> {
     public MySQLFileInfo getByUploadId(String uploadId);
 
+    @Modifying
+    @Query("UPDATE `files` set `parent` = replace(`parent`,:src,:dst) where parent LIKE :#{#src + '%'} ")
+    public void moveDir(String src, String dst);
+
+    @Modifying
+    @Query("UPDATE `files` set `name` = :nameDst, `parent` = :parentDst where `id` = :id")
+    public void moveFile(String parentDst, String nameDst, Long id);
+
     @Query("SELECT * from files WHERE parent = :parent and name = :name LIMIT 1")
     public MySQLFileInfo getByPath(@Param("parent") String parent, @Param("name") String name);
 
