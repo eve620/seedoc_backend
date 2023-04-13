@@ -10,6 +10,8 @@ import top.shlande.clouddisk.vfs.FileInfo;
 import top.shlande.clouddisk.vfs.VFSService;
 
 import java.io.IOException;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
 import java.security.NoSuchAlgorithmException;
 
@@ -35,7 +37,7 @@ public class FileController {
     @GetMapping("/{etag}")
     public void get(@PathVariable String etag, @RequestParam(required = false) String filename, HttpServletResponse response) throws IOException {
         if (filename != null) {
-            response.setHeader("Content-Disposition", "attachment;filename=" + filename);
+            response.setHeader("Content-Disposition", "attachment;filename=" + URLEncoder.encode(filename, StandardCharsets.UTF_8));
         }
         response.setHeader("Etag", etag);
         storageService.getObject(etag).transferTo(response.getOutputStream());
