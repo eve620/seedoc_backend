@@ -29,3 +29,4 @@ server:
     keyStoreType: PKCS12
     key-store-password: xiaopengfei
   # https://docs.spring.io/spring-cloud-skipper/docs/1.0.0.BUILD-SNAPSHOT/reference/html/configuration-security-enabling-https.html
+  port: 9090

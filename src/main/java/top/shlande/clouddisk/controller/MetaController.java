@@ -77,7 +77,7 @@ public class MetaController {
         if (!user.canWrite(key)) {
             throw new DenyException(user.id, "write");
         }
-        key = deleteSlashPrefix(key);
+        //key = deleteSlashPrefix(key);
         // TODO: add owner service
         var owner = getUserId(request);
         var filePath = Path.of(key);
