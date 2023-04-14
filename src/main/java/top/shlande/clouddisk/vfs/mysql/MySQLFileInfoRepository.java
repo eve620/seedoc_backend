@@ -23,14 +23,14 @@ public interface MySQLFileInfoRepository extends CrudRepository<MySQLFileInfo, L
     @Query("SELECT * from files WHERE parent = :parent and name = :name LIMIT 1")
     public MySQLFileInfo getByPath(@Param("parent") String parent, @Param("name") String name);
 
-    @Query("SELECT * from files WHERE parent = :parent AND id > :startAfter LIMIT :size")
+    @Query("SELECT * from files WHERE parent = :parent AND id > :startAfter AND NOT(created IS NULL) LIMIT :size")
     public List<MySQLFileInfo> list(@Param("parent") String parent, @Param("size") Integer size, @Param("startAfter") Integer startAfter);
 
     @Query("SELECT * from files WHERE etag = :etag LIMIT 1")
     public MySQLFileInfo getByEtag(@Param("etag") String etag);
 
     @Modifying
-    @Query("UPDATE files SET etag = :etag, size = :size WHERE upload_id = :uploadId")
+    @Query("UPDATE files SET etag = :etag, size = :size, created = NOW(), last_modified = NOW() WHERE upload_id = :uploadId")
     public void complete(@Param("uploadId") String uploadId, @Param("etag") String etag, @Param("size") Long size);
 
     @Modifying

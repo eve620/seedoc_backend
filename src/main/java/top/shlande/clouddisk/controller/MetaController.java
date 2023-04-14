@@ -17,6 +17,7 @@ import java.io.IOException;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
+import java.util.Date;
 import java.util.List;
 
 @RequestMapping("meta")
@@ -35,7 +36,7 @@ public class MetaController {
     // TODO: @GetMapping("/{prefix}?list")
     @GetMapping
     public List<FileInfo> list(@RequestParam String prefix,
-                               @RequestParam(required = false, defaultValue = "50") int maxKeys,
+                               @RequestParam(required = false, defaultValue = "1000") int maxKeys,
                                @RequestParam(required = false, defaultValue = "0") int startAfter) {
         return vfsService.list(prefix, maxKeys, startAfter);
     }
@@ -82,6 +83,7 @@ public class MetaController {
         var owner = getUserId(request);
         var filePath = Path.of(key);
         var fileInfo = new FileInfo();
+        var now = new Date();
         fileInfo.contentType = request.getHeader("Content-Type");
         fileInfo.name = filePath.getFileName().toString();
         fileInfo.owner = owner;
