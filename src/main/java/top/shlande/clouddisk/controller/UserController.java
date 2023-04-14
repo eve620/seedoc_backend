@@ -1,8 +1,8 @@
 package top.shlande.clouddisk.controller;
 
-import jakarta.servlet.http.Cookie;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
+import javax.servlet.http.Cookie;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -56,12 +56,14 @@ public class UserController {
         cookie.setPath("/");
         cookie.setHttpOnly(false);
         cookie.setSecure(true);
-        cookie.setAttribute("SameSite", "None");
+//        cookie.setAttribute("SameSite", "None");
         response.addCookie(cookie);
     }
 
     @GetMapping("/whoami")
     public UserInfo whoami(HttpServletRequest request) {
+        var session = request.getSession(false);
+//        var userId  = session.getAttribute("_const_cas_assertion_");
         var user = this.userService.user(getUserId(request));
         return new UserInfo(user);
     }
@@ -79,7 +81,6 @@ public class UserController {
         users.forEach(user -> result.add(new UserInfo(user)));
         return result;
     }
-
 
     @Data
     @NoArgsConstructor

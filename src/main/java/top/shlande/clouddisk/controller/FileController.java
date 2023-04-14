@@ -1,19 +1,14 @@
 package top.shlande.clouddisk.controller;
 
-import jakarta.servlet.ServletRequest;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
+import javax.servlet.ServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import top.shlande.clouddisk.storage.LocalStorageService;
-import top.shlande.clouddisk.vfs.FileInfo;
-import top.shlande.clouddisk.vfs.VFSService;
 
 import java.io.IOException;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
-import java.nio.file.Path;
-import java.security.NoSuchAlgorithmException;
 
 @RestController
 @RequestMapping("api/file")
