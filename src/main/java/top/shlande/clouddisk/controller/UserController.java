@@ -17,7 +17,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @RestController
-@RequestMapping("user")
+@RequestMapping("api/user")
 public class UserController {
     private final static String CookieKeyUserId = "userId";
     private final UserService userService;

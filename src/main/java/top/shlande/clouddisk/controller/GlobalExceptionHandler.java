@@ -13,7 +13,6 @@ import top.shlande.clouddisk.vfs.NilDirException;
 import top.shlande.clouddisk.vfs.NotEmptyException;
 
 @ControllerAdvice
-@RestController
 public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
     public static class Message {
         String message;

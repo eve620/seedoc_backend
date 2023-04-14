@@ -20,7 +20,7 @@ import java.nio.file.Path;
 import java.util.Date;
 import java.util.List;
 
-@RequestMapping("meta")
+@RequestMapping("api/meta")
 @RestController
 public class MetaController {
     private final LocalStorageService storageService;

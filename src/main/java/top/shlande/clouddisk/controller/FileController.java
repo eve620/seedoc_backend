@@ -16,7 +16,7 @@ import java.nio.file.Path;
 import java.security.NoSuchAlgorithmException;
 
 @RestController
-@RequestMapping("file")
+@RequestMapping("api/file")
 public class FileController {
     private final LocalStorageService storageService;
 
