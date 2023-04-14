@@ -13,6 +13,9 @@ import top.shlande.clouddisk.user.DenyException;
 import top.shlande.clouddisk.user.NotFoundException;
 import top.shlande.clouddisk.user.UserService;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @RestController
 @RequestMapping("user")
 public class UserController {
@@ -64,10 +67,19 @@ public class UserController {
     }
 
     // 获取用户信息
-    @GetMapping("/{id}")
-    public UserInfo info(@PathVariable("id") String id) {
-        return new UserInfo(this.userService.user(id));
+    @GetMapping()
+    public List<UserInfo> info(@RequestParam(value = "id", required = false) List<String> ids) {
+        List<User> users;
+        if (ids == null || ids.size() == 0) {
+            users = this.userService.listAll();
+        } else {
+            users = this.userService.listByIds(ids);
+        }
+        var result = new ArrayList<UserInfo>(users.size());
+        users.forEach(user -> result.add(new UserInfo(user)));
+        return result;
     }
+
 
     @Data
     @NoArgsConstructor
@@ -78,6 +90,7 @@ public class UserController {
         public String permission;
 
         public UserInfo(User user) {
+            this.id = user.id;
             this.name = user.name;
             this.role = user.role;
             this.permission = user.context.toString();
@@ -85,6 +98,7 @@ public class UserController {
     }
 
     public static class UserRequest {
+        public String id;
         public String name;
         public String password;
         public User.Role role;
@@ -92,24 +106,27 @@ public class UserController {
     }
 
     // 添加用户
-    @PostMapping("/user")
+    @PostMapping()
     public String create(@RequestBody UserRequest request, HttpServletRequest http) {
         // TODO: 使用filter进行拦截，保证一定有cookie
         // TODO:get userid from http
-        return this.userService.addUser(getUserId(http), request.name, request.password, request.role, new UserContext(request.permission)).id;
+        return this.userService.addUser(getUserId(http), request.id, request.name, request.password, request.role, new UserContext(request.permission)).id;
     }
 
     // 删除用户
-    @DeleteMapping("/user/{userId}")
+    @GetMapping("/delete/{userId}")
     public void delete(@PathVariable String userId, HttpServletRequest http) {
         this.userService.deleteUser(getUserId(http), userId);
     }
 
     // 设置用户信息
     // operator name context
-    @PutMapping("/user/{userId}")
+    @PutMapping("/{userId}")
     public void setUser(@PathVariable String userId, HttpServletRequest http, @RequestBody UserRequest request) {
-        this.userService.setUser(getUserId(http), userId, request.name, new UserContext(request.permission), request.role);
+        if (request.password == null || request.password.length() == 0) {
+            request.password = null;
+        }
+        this.userService.setUser(getUserId(http), userId, request.name, request.password, new UserContext(request.permission), request.role);
     }
 
     private String getUserId(HttpServletRequest http) {

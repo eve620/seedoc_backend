@@ -5,7 +5,7 @@ import top.shlande.clouddisk.entity.UserContext;
 import top.shlande.clouddisk.user.jdbc.JdbcUser;
 import top.shlande.clouddisk.user.jdbc.JdbcUserRepository;
 
-import java.util.Objects;
+import java.util.*;
 
 public class UserService {
     private JdbcUserRepository repository;
@@ -14,18 +14,34 @@ public class UserService {
         this.repository = repository;
     }
 
+    public List<User> listByIds(List<String> ids) {
+        var result = new ArrayList<User>(ids.size());
+        this.repository.findAllById(ids).forEach(user -> {
+            result.add(user.toUserDetail());
+        });
+        return result;
+    }
+
+    public List<User> listAll() {
+        var result = new LinkedList<User>();
+        this.repository.findAll().forEach(user -> {
+            result.add(user.toUserDetail());
+        });
+        return result;
+    }
+
     public User user(String userId) {
         return getUser(userId);
     }
 
     // 创建用户,只允许管理员操作
-    public User addUser(String operator, String name, String password, User.Role role, UserContext permission) {
+    public User addUser(String operator, String userId, String name, String password, User.Role role, UserContext permission) {
         var userOptional = repository.findById(operator);
         if (userOptional.isEmpty()) {
             throw new DenyException(operator, "operator not found");
         }
         var user = userOptional.get().toUserDetail();
-        var newUser = user.createUser(name, password, role, permission);
+        var newUser = user.createUser(userId, name, password, role, permission);
         repository.insert(new JdbcUser(newUser));
         return newUser;
     }
@@ -46,13 +62,14 @@ public class UserService {
     }
 
     // 设置用户信息，只允许管理员操作
-    public void setUser(String operatorId, String userId, String name, UserContext permission, User.Role role) {
+    public void setUser(String operatorId, String userId, String name, String password, UserContext permission, User.Role role) {
         var operator = getUser(operatorId);
         var user = getUser(userId);
-        if (!operator.canDelete(user)) {
+        if (!operator.canSetCredential(user)) {
             throw new DenyException(operatorId, "deleteUser");
         }
-        operator.update(user, name, role, permission);
+        operator.update(user, name, password, role, permission);
+        this.repository.save(new JdbcUser(user));
     }
 
     // 修改用户密码
@@ -78,7 +95,7 @@ public class UserService {
     }
 
     public boolean login(String userId, String password) {
-        var user  = getUser(userId);
+        var user = getUser(userId);
         return Objects.equals(user.password, password);
     }
 }

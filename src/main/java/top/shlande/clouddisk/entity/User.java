@@ -1,5 +1,6 @@
 package top.shlande.clouddisk.entity;
 
+import top.shlande.clouddisk.user.BadRequestException;
 import top.shlande.clouddisk.user.DenyException;
 
 import java.util.UUID;
@@ -24,15 +25,18 @@ public class User {
         this.context = permission;
     }
 
-
-    public User createUser(String name, String password, Role role, UserContext permission) {
+    public User createUser(String id, String name, String password, Role role, UserContext permission) {
         onlyAdminCanCreateUser();
         if (!isContextAdmin(permission)) {
             throw new DenyException(this.id, "createUser");
         }
         return new User(
-                UUID.randomUUID().toString(), name, password, defaultCreateNormalUser(role), permission
+                id, name, password, defaultCreateNormalUser(role), permission
         );
+    }
+
+    public User createUser(String name, String password, Role role, UserContext permission) {
+        return createUser(UUID.randomUUID().toString(), name, password, role, permission);
     }
 
     public boolean canWrite(String dir) {
@@ -40,10 +44,11 @@ public class User {
     }
 
     // 当前用户更新其他用户信息
-    public void update(User user, String name, Role role, UserContext permission) {
+    public void update(User user, String name, String password, Role role, UserContext permission) {
         permission = defaultCreateSamePermissionUser(permission);
         if (this.isContextAdmin(permission)) {
-            user.setWithDefault(name, role, permission);
+            user.setWithDefault(name, password, role, permission);
+            return;
         }
         throw new DenyException(this.id, DenyException.updateUserAction);
     }
@@ -53,7 +58,7 @@ public class User {
         return this.isContextAdmin(user.context) || this.id.equals(user.id);
     }
 
-    private void setWithDefault(String name, Role role, UserContext context) {
+    private void setWithDefault(String name, String password, Role role, UserContext context) {
         if (name != null) {
             this.name = name;
         }
@@ -62,6 +67,9 @@ public class User {
         }
         if (context != null) {
             this.context = context;
+        }
+        if (password != null) {
+            setPassword(password);
         }
     }
 
@@ -108,4 +116,10 @@ public class User {
         return this.isAdmin() && this.context.canAccess(context.toString());
     }
 
+    private void setPassword(String password) {
+        if (password == null || this.password.length() < 6) {
+            throw new BadRequestException(this.id, "password too weak");
+        }
+        this.password = password;
+    }
 }
