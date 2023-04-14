@@ -116,8 +116,8 @@ public class User {
         return this.isAdmin() && this.context.canAccess(context.toString());
     }
 
-    private void setPassword(String password) {
-        if (password == null || this.password.length() < 6) {
+    public void setPassword(String password) {
+        if (password == null || password.length() < 6) {
             throw new BadRequestException(this.id, "password too weak");
         }
         this.password = password;

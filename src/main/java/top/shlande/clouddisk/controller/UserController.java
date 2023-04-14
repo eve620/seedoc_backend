@@ -129,6 +129,12 @@ public class UserController {
         this.userService.setUser(getUserId(http), userId, request.name, request.password, new UserContext(request.permission), request.role);
     }
 
+    @PutMapping
+    public void setUser(HttpServletRequest http, @RequestBody UserRequest request) {
+        var userId = getUserId(http);
+        this.userService.setPassword(userId, userId, request.password);
+    }
+
     private String getUserId(HttpServletRequest http) {
         var session = http.getSession(false);
         if (session == null) {

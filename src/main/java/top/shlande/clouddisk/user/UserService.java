@@ -82,7 +82,7 @@ public class UserService {
         if (!operator.canSetCredential(user)) {
             throw new DenyException(operatorId, "setPassword");
         }
-        user.password = newPassword;
+        user.setPassword(newPassword);
         this.repository.save(new JdbcUser(user));
     }
 
