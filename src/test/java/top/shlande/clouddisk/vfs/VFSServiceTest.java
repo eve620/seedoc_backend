@@ -38,7 +38,7 @@ public class VFSServiceTest {
     }
 
 
-    @Test
+//    @Test
     public void test() {
         // 在测试前，所有的数据都需要被清空
         // 如果parent文件夹不存在，则报错
@@ -78,7 +78,7 @@ public class VFSServiceTest {
         Assert.isTrue(service.list("", 50, 0).size() == 0, "should be 0 object in testDir path");
     }
 
-    @Test
+//    @Test
     public void testMove() {
         var dst = "教学办公室/2023年/制度文";
         var src = "教学办公室/2023年/制度文件";

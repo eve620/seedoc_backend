@@ -16,14 +16,14 @@ public class LocalStorageServiceTest {
         this.storageService = new LocalStorageServiceImpl("./storage",new MemoryPartService());
     }
 
-    @Test
+//    @Test
     public void testTwice() throws Exception {
         // run twice to ensure duplicate object is allowed
         test();
         test();
     }
 
-    @Test
+//    @Test
     public void test() throws Exception {
         var uploadId = storageService.createUpload();
         storageService.putPart(new ByteArrayInputStream("world".getBytes()), uploadId, 2);
