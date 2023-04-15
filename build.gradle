@@ -24,15 +24,9 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-web'
     implementation 'org.springframework.boot:spring-boot-starter-data-jdbc'
 
-    implementation 'org.apereo.cas.client:cas-client-core:4.0.1'
+//    implementation 'org.apereo.cas.client:cas-client-core:4.0.1'
+    implementation 'org.apereo.cas.client:cas-client-support-springboot:4.0.1'
 
-//    compileOnly 'javax.servlet:javax.servlet-api:4.0.1'
-//    implementation 'org.springframework.boot:spring-boot-legacy'
-// https://mvnrepository.com/artifact/org.springframework.boot/spring-boot-legacy
-
-//    implementation 'org.springframework.boot:spring-boot-legacy:2.1.0.RELEASE'
-
-//    compileOnly fileTree(dir: "src/main/WEB-INF/lib",includes: ['*.jar'])
 
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
     compileOnly 'org.projectlombok:lombok'

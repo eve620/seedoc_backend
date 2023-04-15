@@ -10,6 +10,15 @@ spring:
   sql:
     init:
       mode: always
+cas:
+  single-logout:
+    enabled: true
+  authentication-url-patterns:
+    - /file/*
+    - /manage
+  server-login-url: https://ids.xidian.edu.cn/authserver/login
+  client-host-url: https://dyxt.xidian.edu.cn:443
+
 
 logging:
   level:
