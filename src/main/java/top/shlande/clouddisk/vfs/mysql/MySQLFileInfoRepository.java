@@ -20,7 +20,7 @@ public interface MySQLFileInfoRepository extends CrudRepository<MySQLFileInfo, L
     @Query("UPDATE `files` set `name` = :nameDst, `parent` = :parentDst where `id` = :id")
     public void moveFile(String parentDst, String nameDst, Long id);
 
-    @Query("SELECT * from files WHERE parent = :parent AND name = :name LIMIT 1 AND NOT(created IS NULL)")
+    @Query("SELECT * from files WHERE parent = :parent AND name = :name AND NOT(created IS NULL) LIMIT 1")
     public MySQLFileInfo getByPath(@Param("parent") String parent, @Param("name") String name);
 
     @Query("SELECT * from files WHERE parent = :parent AND id > :startAfter AND NOT(created IS NULL) LIMIT :size")

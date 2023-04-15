@@ -27,6 +27,13 @@ public class ArchiveService {
         // TODO: 这样设计可能会导致同时打开的文件数量过大
         var files = new HashMap<String, Optional<InputStream>>();
         for (var path : paths) {
+            // 先判断文件类型
+            var file = vfsService.get(path);
+            // 如果是文件
+            if (file.etag != null) {
+                files.put(file.name, Optional.of(localStorageService.getObject(file.etag)));
+                continue;
+            }
             for (var entry : vfsService.walk(path).entrySet()) {
                 var filePath = entry.getKey().substring(path.length() == 0 ? 0 :path.length() + 1);
                 if (entry.getValue().etag == null) {
