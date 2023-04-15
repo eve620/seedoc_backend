@@ -9,6 +9,7 @@ import top.shlande.clouddisk.vfs.VFSService;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.nio.file.Path;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Optional;
@@ -30,12 +31,19 @@ public class ArchiveService {
             // 先判断文件类型
             var file = vfsService.get(path);
             // 如果是文件
-            if (file.etag != null) {
+            if (file != null && file.etag != null) {
                 files.put(file.name, Optional.of(localStorageService.getObject(file.etag)));
                 continue;
             }
-            for (var entry : vfsService.walk(path).entrySet()) {
-                var filePath = entry.getKey().substring(path.length() == 0 ? 0 :path.length() + 1);
+            var subFiles = vfsService.walk(path).entrySet();
+            if (subFiles.size() == 0) {
+                files.put(file.name, Optional.empty());
+                continue;
+            }
+            for (var entry : subFiles) {
+                var parentPath = Path.of(path).getParent();
+                var parentPathString = parentPath == null ? "" : parentPath.toString();
+                var filePath = entry.getKey().substring(parentPathString.length() == 0 ? 0 : path.length() + 1);
                 if (entry.getValue().etag == null) {
                     files.put(filePath, Optional.empty());
                     continue;
@@ -43,6 +51,8 @@ public class ArchiveService {
                 files.put(filePath, Optional.of(localStorageService.getObject(entry.getValue().etag)));
             }
         }
-        ArchiveUtils.tar(files,outputStream);
+
+
+        ArchiveUtils.tar(files, outputStream);
     }
 }
