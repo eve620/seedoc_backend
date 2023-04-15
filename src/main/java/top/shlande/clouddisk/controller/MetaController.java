@@ -80,7 +80,7 @@ public class MetaController {
         }
         //key = deleteSlashPrefix(key);
         // TODO: add owner service
-        var owner = getUserId(request);
+        var owner = Utils.getUserId(request);
         var filePath = Path.of(key);
         var fileInfo = new FileInfo();
         var now = new Date();
@@ -137,22 +137,13 @@ public class MetaController {
 
     @GetMapping("/user/{id}")
     private User getUser(@PathVariable("id") HttpServletRequest http) {
-        return this.userService.user(getUserId(http));
+        return this.userService.user(Utils.getUserId(http));
     }
 
     @GetMapping("/user/whoami")
     private User whoAmI(HttpServletRequest http) {
-        return this.userService.user(getUserId(http));
+        return this.userService.user(Utils.getUserId(http));
     }
-
-    private String getUserId(HttpServletRequest http) {
-        var session = http.getSession(false);
-        if (session == null) {
-            throw new DenyException("", "not login");
-        }
-        return (String) session.getAttribute("userId");
-    }
-
 
     private String deleteSlashPrefix(String key) {
         if (key != null && key.indexOf("/") == 0) {

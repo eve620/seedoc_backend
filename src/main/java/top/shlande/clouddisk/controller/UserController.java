@@ -56,15 +56,13 @@ public class UserController {
         cookie.setPath("/");
         cookie.setHttpOnly(false);
         cookie.setSecure(true);
-//        cookie.setAttribute("SameSite", "None");
         response.addCookie(cookie);
     }
 
     @GetMapping("/whoami")
     public UserInfo whoami(HttpServletRequest request) {
         var session = request.getSession(false);
-//        var userId  = session.getAttribute("_const_cas_assertion_");
-        var user = this.userService.user(getUserId(request));
+        var user = this.userService.user(Utils.getUserId(request));
         return new UserInfo(user);
     }
 
@@ -111,13 +109,13 @@ public class UserController {
     public String create(@RequestBody UserRequest request, HttpServletRequest http) {
         // TODO: 使用filter进行拦截，保证一定有cookie
         // TODO:get userid from http
-        return this.userService.addUser(getUserId(http), request.id, request.name, request.password, request.role, new UserContext(request.permission)).id;
+        return this.userService.addUser(Utils.getUserId(http), request.id, request.name, request.password, request.role, new UserContext(request.permission)).id;
     }
 
     // 删除用户
     @GetMapping("/delete/{userId}")
     public void delete(@PathVariable String userId, HttpServletRequest http) {
-        this.userService.deleteUser(getUserId(http), userId);
+        this.userService.deleteUser(Utils.getUserId(http), userId);
     }
 
     // 设置用户信息
@@ -127,20 +125,12 @@ public class UserController {
         if (request.password == null || request.password.length() == 0) {
             request.password = null;
         }
-        this.userService.setUser(getUserId(http), userId, request.name, request.password, new UserContext(request.permission), request.role);
+        this.userService.setUser(Utils.getUserId(http), userId, request.name, request.password, new UserContext(request.permission), request.role);
     }
 
     @PutMapping
     public void setUser(HttpServletRequest http, @RequestBody UserRequest request) {
-        var userId = getUserId(http);
+        var userId = Utils.getUserId(http);
         this.userService.setPassword(userId, userId, request.password);
-    }
-
-    private String getUserId(HttpServletRequest http) {
-        var session = http.getSession(false);
-        if (session == null) {
-            throw new DenyException("", "not login");
-        }
-        return (String) session.getAttribute("userId");
     }
 }
