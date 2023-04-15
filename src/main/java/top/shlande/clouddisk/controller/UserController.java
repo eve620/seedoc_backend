@@ -52,11 +52,6 @@ public class UserController {
         }
         var session = request.getSession(true);
         session.setAttribute("userId", login.name);
-        var cookie = new Cookie("JSESSIONID", session.getId());
-        cookie.setPath("/");
-        cookie.setHttpOnly(false);
-        cookie.setSecure(true);
-        response.addCookie(cookie);
     }
 
     @GetMapping("/whoami")
