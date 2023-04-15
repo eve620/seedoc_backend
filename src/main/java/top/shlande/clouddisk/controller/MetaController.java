@@ -50,7 +50,7 @@ public class MetaController {
             return;
         }
         response.setStatus(HttpServletResponse.SC_MOVED_TEMPORARILY);
-        response.setHeader("Location", "/file/" + fileInfo.etag + "?filename=" + URLEncoder.encode(fileInfo.name, StandardCharsets.UTF_8));
+        response.setHeader("Location", "/file/object/" + fileInfo.etag + "?filename=" + URLEncoder.encode(fileInfo.name, StandardCharsets.UTF_8));
     }
 
     @PutMapping("/{*key}")
