@@ -1,6 +1,7 @@
 package top.shlande.clouddisk.controller;
 
 import jakarta.servlet.ServletRequest;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -9,6 +10,8 @@ import top.shlande.clouddisk.storage.LocalStorageService;
 import java.io.IOException;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.util.List;
 
 @RestController
 @RequestMapping("api/file")
@@ -38,4 +41,10 @@ public class FileController {
         storageService.getObject(etag).transferTo(response.getOutputStream());
     }
 
+    // 这个方法的存在导致了 vfsService 和 storageService 强耦合，但是现在也没有什么单独部署的需求，先这么做了吧
+    // 而且直接在 controller 进行的耦合，不便于测试
+    @GetMapping("/archive")
+    public void archive(@RequestParam List<String> paths, HttpServletResponse response) {
+
+    }
 }

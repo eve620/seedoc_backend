@@ -1,6 +1,7 @@
 package top.shlande.clouddisk.vfs;
 
 import java.util.List;
+import java.util.Map;
 
 public class MemoryVFSService implements VFSService {
     @Override
@@ -12,7 +13,7 @@ public class MemoryVFSService implements VFSService {
     }
 
     @Override
-    public List<FileInfo> walk(String dirKey) {
+    public Map<String, FileInfo> walk(String dirKey) {
         return null;
     }
 

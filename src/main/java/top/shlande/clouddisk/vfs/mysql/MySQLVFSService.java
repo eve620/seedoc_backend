@@ -6,10 +6,12 @@ import top.shlande.clouddisk.vfs.NilDirException;
 import top.shlande.clouddisk.vfs.NotEmptyException;
 import top.shlande.clouddisk.vfs.VFSService;
 
-import java.io.File;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class MySQLVFSService implements VFSService {
     private final MySQLFileInfoRepository repository;
@@ -54,11 +56,11 @@ public class MySQLVFSService implements VFSService {
     }
 
     @Override
-    public List<FileInfo> walk(String dirKey) {
+    public Map<String, FileInfo> walk(String dirKey) {
         var infos = walkDir(dirKey);
-        var result = new ArrayList<FileInfo>(infos.size());
+        var result = new HashMap<String,FileInfo>(infos.size());
         for (MySQLFileInfo info : infos) {
-            result.add(info.toFileInfo());
+            result.put(Paths.get(info.parent).resolve(info.name).toString(),info.toFileInfo());
         }
         return result;
     }

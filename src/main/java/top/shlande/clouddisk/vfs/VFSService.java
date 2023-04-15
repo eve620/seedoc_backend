@@ -1,6 +1,7 @@
 package top.shlande.clouddisk.vfs;
 
 import java.util.List;
+import java.util.Map;
 
 // TODO: rename 和其他 walk 存在底层实习问题，可能需要一层抽象
 public interface VFSService {
@@ -8,7 +9,7 @@ public interface VFSService {
 
     public List<FileInfo> list(String dirKey, Integer maxKey, Integer start);
 
-    public List<FileInfo> walk(String dirKey);
+    public Map<String,FileInfo>  walk(String dirKey);
 
     public void rename(String src,String dst);
 

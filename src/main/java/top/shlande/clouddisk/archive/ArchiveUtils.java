@@ -1,4 +1,4 @@
-package top.shlande.clouddisk.storage;
+package top.shlande.clouddisk.archive;
 
 import java.io.IOException;
 import java.io.InputStream;
