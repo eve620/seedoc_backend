@@ -1,10 +1,10 @@
 package top.shlande.clouddisk.config;
 
-import org.jasig.cas.client.authentication.AuthenticationFilter;
-import org.jasig.cas.client.session.SingleSignOutFilter;
-import org.jasig.cas.client.session.SingleSignOutHttpSessionListener;
-import org.jasig.cas.client.util.HttpServletRequestWrapperFilter;
-import org.jasig.cas.client.validation.Cas20ProxyReceivingTicketValidationFilter;
+import org.apereo.cas.client.authentication.AuthenticationFilter;
+import org.apereo.cas.client.session.SingleSignOutFilter;
+import org.apereo.cas.client.session.SingleSignOutHttpSessionListener;
+import org.apereo.cas.client.util.HttpServletRequestWrapperFilter;
+import org.apereo.cas.client.validation.Cas20ProxyReceivingTicketValidationFilter;
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.boot.web.servlet.ServletListenerRegistrationBean;
 import org.springframework.context.annotation.Bean;
@@ -29,6 +29,7 @@ public class SSOConfiguration {
         return filter;
     }
 
+    // 这里的健全filter是用来引导用户前往指定的CAS server
     @Bean
     public FilterRegistrationBean<AuthenticationFilter> AuthenticationFilter() {
         var bean = new FilterRegistrationBean<AuthenticationFilter>();
@@ -41,10 +42,11 @@ public class SSOConfiguration {
 
         bean.setName("CASFilter");
         bean.setFilter(authFilter);
-        bean.setUrlPatterns(List.of("/*"));
+        bean.setUrlPatterns(List.of("/file/*"));
         return bean;
     }
 
+    // 这里的ticketValidationFilter其实是用来拦截来自CAS server的回调信息的
     @Bean
     public FilterRegistrationBean<Cas20ProxyReceivingTicketValidationFilter> ticketValidationFilter() {
         var bean = new FilterRegistrationBean<Cas20ProxyReceivingTicketValidationFilter>();
