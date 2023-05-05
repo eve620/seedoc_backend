@@ -119,14 +119,13 @@ public class MetaController {
     @PostMapping("/{*key}")
     public void createDir(@PathVariable String key, HttpServletRequest request) {
         key = deleteSlashPrefix(key);
-        var parent = PathUtils.directory(key);
         var user = getUser(request);
-        if (!user.canWrite(parent)) {
+        if (!user.canWrite(key)) {
             throw new DenyException(user.id, "createDir");
         }
         var dir = FileInfo.dir(key);
         dir.owner = user.id;
-        this.vfsService.create(parent, dir);
+        this.vfsService.create(PathUtils.directory(key), dir);
     }
 
     @GetMapping("/user/{id}")
