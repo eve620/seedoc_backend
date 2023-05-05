@@ -20,7 +20,7 @@ public class StaticResourceConfiguration implements WebMvcConfigurer {
                 .setViewName("forward:/index.html");
         registry.addViewController("/manage")
                 .setViewName("forward:/index.html");
-        registry.addViewController("/login")
+        registry.addViewController("/login/**")
                 .setViewName("forward:/index.html");
         registry.addViewController("/file/**")
                 .setViewName("forward:/index.html");

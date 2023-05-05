@@ -24,18 +24,7 @@ logging:
   level:
     sql: trace
 server:
-  servlet:
-    session:
-      cookie:
-        http-only: false
   error:
     include-stacktrace: never
-  http2:
-    enabled: true
-  ssl:
-    key-alias: tomcat
-    key-store: ./keystore.p12
-    keyStoreType: PKCS12
-    key-store-password: xiaopengfei
-  # https://docs.spring.io/spring-cloud-skipper/docs/1.0.0.BUILD-SNAPSHOT/reference/html/configuration-security-enabling-https.html
+
   port: 9090
