@@ -3,6 +3,7 @@ package top.shlande.clouddisk.archive;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.RequestParam;
+import top.shlande.clouddisk.PathUtils;
 import top.shlande.clouddisk.storage.LocalStorageService;
 import top.shlande.clouddisk.vfs.VFSService;
 
@@ -41,9 +42,8 @@ public class ArchiveService {
                 continue;
             }
             for (var entry : subFiles) {
-                var parentPath = Path.of(path).getParent();
-                var parentPathString = parentPath == null ? "" : parentPath.toString();
-                var filePath = entry.getKey().substring(parentPathString.length() == 0 ? 0 : path.length() + 1);
+                var parentPath = PathUtils.directory(path);
+                var filePath = entry.getKey().substring(parentPath.length() == 0 ? 0 : path.length() + 1);
                 if (entry.getValue().etag == null) {
                     files.put(filePath, Optional.empty());
                     continue;

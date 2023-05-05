@@ -1,6 +1,7 @@
 package top.shlande.clouddisk.vfs.mysql;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import top.shlande.clouddisk.PathUtils;
 import top.shlande.clouddisk.vfs.FileInfo;
 import top.shlande.clouddisk.vfs.NilDirException;
 import top.shlande.clouddisk.vfs.NotEmptyException;
@@ -27,11 +28,7 @@ public class MySQLVFSService implements VFSService {
         if (dirKey.length() == 0) {
             hasParent = true;
         } else {
-            var parentPath = Path.of(dirKey);
-            var ppDir = parentPath.getParent();
-            hasParent = this.repository.getByPath(
-                    ppDir == null ? "" : ppDir.toString(), parentPath.getFileName().toString()
-            ) != null;
+            hasParent = this.repository.getByPath(PathUtils.directory(dirKey),PathUtils.filename(dirKey)) != null;
         }
         if (!hasParent) {
             throw new NilDirException(dirKey);
@@ -67,16 +64,16 @@ public class MySQLVFSService implements VFSService {
 
     @Override
     public void rename(String src, String dst) {
-        var parentSrc = getParent(src);
-        var nameSrc = getFilename(src);
+        var parentSrc = PathUtils.directory(src);
+        var nameSrc = PathUtils.filename(src);
         // 查看src文件是否存在
         var srcFile = this.repository.getByPath(parentSrc,nameSrc);
         if (srcFile == null) {
             throw new NilDirException(src);
         }
         // 查看dst文件是否存在
-        var parentDst = getParent(dst);
-        var nameDst = getFilename(dst);
+        var parentDst = PathUtils.directory(dst);
+        var nameDst = PathUtils.filename(dst);
         // 查看src文件是否存在
         var dstFile = this.repository.getByPath(parentDst,nameDst);
         if (dstFile != null) {
@@ -100,7 +97,7 @@ public class MySQLVFSService implements VFSService {
 
     @Override
     public FileInfo get(String path) {
-        var fileInfo = this.repository.getByPath(getParent(path), getFilename(path));
+        var fileInfo = this.repository.getByPath(PathUtils.directory(path), PathUtils.filename(path));
         return fileInfo == null ? null : fileInfo.toFileInfo();
     }
 
@@ -118,7 +115,7 @@ public class MySQLVFSService implements VFSService {
         // 如果是文件夹，则删除所有子文件
         deleteAll(walkDir(key));
         // 删除文件本身
-        this.repository.deleteByPath(getParent(key), getFilename(key));
+        this.repository.deleteByPath(PathUtils.directory(key), PathUtils.filename(key));
     }
 
     private void deleteAll(List<MySQLFileInfo> infos) {
@@ -130,15 +127,5 @@ public class MySQLVFSService implements VFSService {
             ids.add(sub.id);
         }
         this.repository.deleteAllById(ids);
-    }
-
-    private String getParent(String path) {
-        var ppath = Path.of(path).getParent();
-        return ppath == null ? "" : ppath.toString();
-    }
-
-
-    private String getFilename(String path) {
-        return Path.of(path).getFileName().toString();
     }
 }

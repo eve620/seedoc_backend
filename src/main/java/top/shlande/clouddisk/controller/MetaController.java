@@ -4,6 +4,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+import top.shlande.clouddisk.PathUtils;
 import top.shlande.clouddisk.entity.User;
 import top.shlande.clouddisk.storage.CompleteUploadResult;
 import top.shlande.clouddisk.storage.LocalStorageService;
@@ -81,14 +82,12 @@ public class MetaController {
         //key = deleteSlashPrefix(key);
         // TODO: add owner service
         var owner = Utils.getUserId(request);
-        var filePath = Path.of(key);
         var fileInfo = new FileInfo();
-        var now = new Date();
         fileInfo.contentType = request.getHeader("Content-Type");
-        fileInfo.name = filePath.getFileName().toString();
+        fileInfo.name = PathUtils.filename(key);
         fileInfo.owner = owner;
         fileInfo.uploadId = storageService.createUpload();
-        var parent = filePath.getParent() == null ? "" : filePath.getParent().toString();
+        var parent = PathUtils.directory(key);
         vfsService.create(parent, fileInfo);
         return fileInfo.uploadId;
     }
@@ -124,15 +123,14 @@ public class MetaController {
     @PostMapping("/{*key}")
     public void createDir(@PathVariable String key, HttpServletRequest request) {
         key = deleteSlashPrefix(key);
-        var parent = Path.of(key).getParent();
-        var parentKey = parent == null ? "" : parent.toString();
+        var parent = PathUtils.directory(key);
         var user = getUser(request);
-        if (!user.canWrite(parentKey)) {
+        if (!user.canWrite(parent)) {
             throw new DenyException(user.id, "createDir");
         }
         var dir = FileInfo.dir(key);
         dir.owner = user.id;
-        this.vfsService.create(parentKey, dir);
+        this.vfsService.create(parent, dir);
     }
 
     @GetMapping("/user/{id}")

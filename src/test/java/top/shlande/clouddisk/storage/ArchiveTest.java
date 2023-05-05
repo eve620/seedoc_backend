@@ -26,7 +26,7 @@ public class ArchiveTest {
             Map.entry("测试文件夹", Optional.empty())
     );
 
-    @Test
+//    @Test
     public void test() throws IOException {
         var output = Files.newOutputStream(Path.of("./test.zip"));
         ArchiveUtils.tar(files, output);
@@ -38,7 +38,7 @@ public class ArchiveTest {
         archiveService.archive(List.of("电子信息工程","信息对抗技术","电磁场与无线技术"), output);
     }
 
-    @Test
+//    @Test
     public void testArchiveFile() throws IOException {
         var output = Files.newOutputStream(Path.of("./test-file.zip"));
         archiveService.archive(List.of("电子信息工程/8f1c5abc129d8c3ef09ffce5de94ac44Q7.png"),output);

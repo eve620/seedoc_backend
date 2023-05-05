@@ -32,8 +32,8 @@ public class MySQLFileInfo {
         this.size = info.size;
         this.contentType = info.contentType;
         this.owner = info.owner;
-        this.created = info.created;
-        this.lastModified = info.lastModified;
+        this.created = info.created == null ? new Date() : info.created;
+        this.lastModified = info.created == null ? new Date() : info.created;
         this.etag = info.etag;
         this.uploadId = info.uploadId;
         this.parent = parent;
