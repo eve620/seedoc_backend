@@ -23,4 +23,13 @@ public class FileInfo {
         fileInfo.created = now;
         return fileInfo;
     }
+    public static FileInfo file(String key, String contentType,String uploadId, String owner) {
+        var fileInfo = new FileInfo();
+        fileInfo.name = PathUtils.filename(key);
+        fileInfo.contentType = contentType;
+        fileInfo.owner = owner;
+        fileInfo.lastModified = new Date();
+        fileInfo.uploadId = uploadId;
+        return fileInfo;
+    }
 }

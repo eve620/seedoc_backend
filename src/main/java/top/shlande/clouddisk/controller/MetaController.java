@@ -79,14 +79,10 @@ public class MetaController {
         if (!user.canWrite(key)) {
             throw new DenyException(user.id, "write");
         }
-        //key = deleteSlashPrefix(key);
         // TODO: add owner service
         var owner = Utils.getUserId(request);
-        var fileInfo = new FileInfo();
-        fileInfo.contentType = request.getHeader("Content-Type");
-        fileInfo.name = PathUtils.filename(key);
-        fileInfo.owner = owner;
-        fileInfo.uploadId = storageService.createUpload();
+        // 此时的 fileinfo 中的 created 应为空,因为created只有在上传完成后才会出现
+        var fileInfo = FileInfo.file(key, request.getHeader("Content-Type"), storageService.createUpload(), owner);
         var parent = PathUtils.directory(key);
         vfsService.create(parent, fileInfo);
         return fileInfo.uploadId;

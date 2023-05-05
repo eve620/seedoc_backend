@@ -57,7 +57,7 @@ public class MySQLVFSService implements VFSService {
         var infos = walkDir(dirKey);
         var result = new HashMap<String,FileInfo>(infos.size());
         for (MySQLFileInfo info : infos) {
-            result.put(Paths.get(info.parent).resolve(info.name).toString(),info.toFileInfo());
+            result.put(PathUtils.join(info.parent,info.name),info.toFileInfo());
         }
         return result;
     }

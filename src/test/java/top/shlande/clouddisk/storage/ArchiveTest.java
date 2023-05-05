@@ -35,7 +35,7 @@ public class ArchiveTest {
     @Test
     public void testService() throws IOException {
         var output = Files.newOutputStream(Path.of("./test-dir.zip"));
-        archiveService.archive(List.of("电子信息工程","信息对抗技术","电磁场与无线技术"), output);
+        archiveService.archive(List.of(""), output);
     }
 
 //    @Test

@@ -29,4 +29,11 @@ public class PathUtils {
         var raw = path.split("/");
         return raw[raw.length-1];
     }
+
+    public static String join(String parent, String file) {
+        if (parent == null || parent.length() == 0) {
+            return file;
+        }
+        return StringUtils.join(List.of(parent,file),'/');
+    }
 }
