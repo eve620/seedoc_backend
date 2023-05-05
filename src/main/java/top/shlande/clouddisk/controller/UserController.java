@@ -1,5 +1,7 @@
 package top.shlande.clouddisk.controller;
 
+import jakarta.servlet.ServletContext;
+import jakarta.servlet.ServletException;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -9,16 +11,23 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import top.shlande.clouddisk.entity.User;
 import top.shlande.clouddisk.entity.UserContext;
-import top.shlande.clouddisk.user.DenyException;
 import top.shlande.clouddisk.user.NotFoundException;
 import top.shlande.clouddisk.user.UserService;
 
+import java.io.IOException;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 
 @RestController
 @RequestMapping("api/user")
 public class UserController {
+    private final static String servletSessionCookieName = "JSESSIONID";
+    private final static String casLogoutUrl = "https://ids.xidian.edu.cn/authserver/";
+    private final static String casApplicationUrl = URLEncoder.encode("https://seedoc.xidian.edu.cn/login", StandardCharsets.UTF_8);
+    private final static String casLogoutRedirectUrl = casLogoutUrl + "logout?service=" + casApplicationUrl;
+    private final static String casLoginRedirectUrl = casLogoutUrl + "login?service=" + casApplicationUrl;
     private final static String CookieKeyUserId = "userId";
     private final UserService userService;
 
@@ -33,14 +42,29 @@ public class UserController {
     }
 
     // 用户退出
-    @DeleteMapping("/logout")
-    public void logout(HttpServletRequest request) {
+    @GetMapping("/logout")
+    public void logout(HttpServletRequest request,HttpServletResponse response) throws ServletException, IOException {
+        var casLoaded = request.getRemoteUser() != null;
         // https://kodejava.org/how-do-i-delete-a-cookie-in-servlet/
         var session = request.getSession(false);
-        if (session == null) {
-            return;
+        if (session != null) {
+            session.invalidate();
+            // 销毁cookie
+            destroySessionCookie(response);
         }
-        session.invalidate();
+        // 如果需要重定向，进行重定向
+        if (casLoaded) {
+            response.sendRedirect(casLogoutRedirectUrl);
+        } else {
+            response.sendRedirect("/login");
+        }
+    }
+
+    private void destroySessionCookie(HttpServletResponse response) {
+        Cookie cookie = new Cookie(servletSessionCookieName, null);
+        cookie.setPath("/");
+        cookie.setMaxAge(0);
+        response.addCookie(cookie);
     }
 
 
@@ -53,6 +77,21 @@ public class UserController {
         var session = request.getSession(true);
         session.setAttribute("userId", login.name);
     }
+
+//    @GetMapping("/login/cas")
+//    public void casLogin(HttpServletRequest request, HttpServletResponse response) throws IOException {
+//        boolean login;
+//        try {
+//            login = Utils.getUserId(request)!= null;
+//        } catch (err) {
+//
+//        }
+//        if () {
+//            response.sendRedirect("/file/");
+//        } else {
+//            response.sendRedirect(casLoginRedirectUrl);
+//        }
+//    }
 
     @GetMapping("/whoami")
     public UserInfo whoami(HttpServletRequest request) {
