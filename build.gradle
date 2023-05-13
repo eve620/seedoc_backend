@@ -27,6 +27,14 @@ dependencies {
 //    implementation 'org.apereo.cas.client:cas-client-core:4.0.1'
     implementation 'org.apereo.cas.client:cas-client-support-springboot:4.0.1'
 
+    // for preview service
+    // word to pdf
+//    implementation 'com.aspose:aspose-words:23.3'
+    // ppt to pdf
+//    implementation 'com.aspose:aspose-slides:23.4'
+    // excel to pdf
+//    implementation 'com.aspose:aspose-cells:23.5'
+
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
     compileOnly 'org.projectlombok:lombok'
     developmentOnly 'org.springframework.boot:spring-boot-devtools'
