@@ -15,6 +15,8 @@ import top.shlande.clouddisk.vfs.FileInfo;
 import top.shlande.clouddisk.vfs.VFSService;
 
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
@@ -139,6 +141,11 @@ public class MetaController {
     }
 
     private String deleteSlashPrefix(String key) {
+//        try {
+//            key = URLDecoder.decode(key, "UTF-8");
+//        } catch (UnsupportedEncodingException e) {
+//            // 处理异常
+//        }
         if (key != null && key.indexOf("/") == 0) {
             return key.substring(1);
         }

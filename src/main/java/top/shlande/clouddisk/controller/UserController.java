@@ -92,6 +92,20 @@ public class UserController {
 //            response.sendRedirect(casLoginRedirectUrl);
 //        }
 //    }
+//    @GetMapping("/login/cas")
+//    public void casLogin(HttpServletRequest request, HttpServletResponse response) throws IOException {
+//        String login = Utils.getUserId(request);
+//        if (!login.isEmpty()) {
+//            response.sendRedirect("/file/");
+//        } else {
+//            response.sendRedirect(casLoginRedirectUrl);
+//        }
+//    }
+
+    @GetMapping("/login/cas")
+    public void casLogin(HttpServletRequest request, HttpServletResponse response) throws IOException {
+        response.sendRedirect("/file/");
+    }
 
     @GetMapping("/whoami")
     public UserInfo whoami(HttpServletRequest request) {

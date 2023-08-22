@@ -10,6 +10,8 @@ import top.shlande.clouddisk.storage.LocalStorageService;
 import java.io.IOException;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
 
 @RestController
@@ -46,8 +48,10 @@ public class FileController {
     // 而且直接在 controller 进行的耦合，不便于测试
     @GetMapping("/archive")
     public void archive(@RequestParam(name = "path") List<String> paths, HttpServletResponse response) throws IOException {
+        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyyMMdd");
+        String fileName = "打包下载_" + dateFormat.format(new Date()) + ".zip";
         response.setStatus(200);
-        response.setHeader("Content-Disposition", "attachment;filename=" + URLEncoder.encode("打包下载.zip", StandardCharsets.UTF_8));
+        response.setHeader("Content-Disposition", "attachment;filename=" + URLEncoder.encode(fileName, StandardCharsets.UTF_8));
         if (paths.size() == 0) {
             paths = List.of("");
         }

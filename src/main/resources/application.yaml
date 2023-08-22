@@ -1,8 +1,8 @@
 spring:
   datasource:
     url: jdbc:mysql://localhost:3306/clouddisk
-    username: root
-    password: xiaopengfei
+    username: u_doc
+    password: 123456
 #  mvc:
 #    hiddenmethod:
 #      filter:
@@ -16,7 +16,7 @@ cas:
   authentication-url-patterns:
     - /login/cas
   server-login-url: https://ids.xidian.edu.cn/authserver/login
-  client-host-url: https://dyxt.xidian.edu.cn:443
+  client-host-url: https://seedoc.xidian.edu.cn:443
   server-url-prefix: https://ids.xidian.edu.cn/authserver
 
 
@@ -27,4 +27,4 @@ server:
   error:
     include-stacktrace: never
 
-  port: 9090
+  port: 8000
