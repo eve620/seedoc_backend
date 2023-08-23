@@ -1,6 +1,5 @@
 package top.shlande.clouddisk.controller;
 
-import jakarta.servlet.ServletContext;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
@@ -101,11 +100,6 @@ public class UserController {
 //            response.sendRedirect(casLoginRedirectUrl);
 //        }
 //    }
-
-    @GetMapping("/login/cas")
-    public void casLogin(HttpServletRequest request, HttpServletResponse response) throws IOException {
-        response.sendRedirect("/file/");
-    }
 
     @GetMapping("/whoami")
     public UserInfo whoami(HttpServletRequest request) {
