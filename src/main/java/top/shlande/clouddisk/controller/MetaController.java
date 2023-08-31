@@ -141,11 +141,6 @@ public class MetaController {
     }
 
     private String deleteSlashPrefix(String key) {
-//        try {
-//            key = URLDecoder.decode(key, "UTF-8");
-//        } catch (UnsupportedEncodingException e) {
-//            // 处理异常
-//        }
         if (key != null && key.indexOf("/") == 0) {
             return key.substring(1);
         }

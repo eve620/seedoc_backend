@@ -1,10 +1,14 @@
 package top.shlande.clouddisk.controller;
 
 import jakarta.servlet.ServletRequest;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import top.shlande.clouddisk.archive.ArchiveService;
+import top.shlande.clouddisk.config.ConfigRepository;
+import top.shlande.clouddisk.entity.Config;
+import top.shlande.clouddisk.entity.User;
 import top.shlande.clouddisk.storage.LocalStorageService;
 
 import java.io.IOException;
@@ -57,4 +61,29 @@ public class FileController {
         }
         this.archiveService.archive(paths,response.getOutputStream());
     }
+
+
+    static class ConfigRequest {
+        public String size;
+    }
+
+    @Autowired
+    private ConfigRepository configRepository;
+    @PutMapping("/size")
+    public void setFileSize(@RequestBody ConfigRequest request) {
+        String size = request.size;
+        configRepository.findById("file_maxsize").ifPresent(maxsize -> {
+            maxsize.setValue(size);
+            configRepository.save(maxsize);
+        });
+    }
+
+    @GetMapping("/size")
+    public String getFileSize() {
+        String size = configRepository.findById("file_maxsize")
+                .map(maxsize -> maxsize.value)
+                .orElse("err");
+        return size;
+    }
+
 }
