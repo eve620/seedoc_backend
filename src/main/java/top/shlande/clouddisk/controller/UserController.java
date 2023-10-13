@@ -46,6 +46,7 @@ public class UserController {
         var casLoaded = request.getRemoteUser() != null;
         // https://kodejava.org/how-do-i-delete-a-cookie-in-servlet/
         var session = request.getSession(false);
+        System.out.println(session);
         if (session != null) {
             session.invalidate();
             // 销毁cookie
@@ -74,6 +75,7 @@ public class UserController {
             throw new NotFoundException(login.name);
         }
         var session = request.getSession(true);
+        System.out.println(session);
         session.setAttribute("userId", login.name);
     }
 
@@ -103,7 +105,7 @@ public class UserController {
 
     @GetMapping("/whoami")
     public UserInfo whoami(HttpServletRequest request) {
-        var session = request.getSession(false);
+//        var session = request.getSession(false);
         var user = this.userService.user(Utils.getUserId(request));
         return new UserInfo(user);
     }
