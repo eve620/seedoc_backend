@@ -166,7 +166,7 @@ public class UserController {
     // operator name context
     @PutMapping("/{userId}")
     public void setUser(@PathVariable String userId, HttpServletRequest http, @RequestBody UserRequest request) {
-        if (request.password == null || request.password.length() == 0) {
+        if (request.password == null || request.password.isEmpty()) {
             request.password = null;
         }
         this.userService.setUser(Utils.getUserId(http), userId, request.name, request.password, new UserContext(request.permission), request.role);

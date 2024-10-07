@@ -25,7 +25,7 @@ public class MySQLVFSService implements VFSService {
     public void create(String dirKey, FileInfo info) {
         //检查parent文件夹是否存在
         boolean hasParent;
-        if (dirKey.length() == 0) {
+        if (dirKey.isEmpty()) {
             hasParent = true;
         } else {
             hasParent = this.repository.getByPath(PathUtils.directory(dirKey),PathUtils.filename(dirKey)) != null;
