@@ -10,10 +10,11 @@ import java.nio.charset.StandardCharsets;
 public class Utils {
     public static String getUserId(HttpServletRequest http) {
         var session = http.getSession(false);
+        var userId = http.getRemoteUser();
         if (session == null) {
             throw new DenyException("", "not login");
         }
-        var userId = http.getRemoteUser();
+
         if (userId == null) {
             userId = (String) session.getAttribute("userId");
         }

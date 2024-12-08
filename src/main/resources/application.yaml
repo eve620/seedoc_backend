@@ -14,7 +14,7 @@ cas:
   single-logout:
     enabled: true
   authentication-url-patterns:
-    - /login
+    - /login/cas
   server-login-url: https://ids.xidian.edu.cn/authserver/login
   client-host-url: https://seedoc.xidian.edu.cn:443
   server-url-prefix: https://ids.xidian.edu.cn/authserver

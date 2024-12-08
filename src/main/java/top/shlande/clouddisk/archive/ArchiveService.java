@@ -37,13 +37,13 @@ public class ArchiveService {
                 continue;
             }
             var subFiles = vfsService.walk(path).entrySet();
-            if (subFiles.size() == 0) {
+            if (subFiles.isEmpty()) {
                 files.put(file.name, Optional.empty());
                 continue;
             }
             for (var entry : subFiles) {
                 var parentPath = PathUtils.directory(path);
-                var filePath = entry.getKey().substring(parentPath.length() == 0 ? 0 : path.length() + 1);
+                var filePath = entry.getKey().substring(parentPath.isEmpty() ? 0 : path.length() + 1);
                 if (entry.getValue().etag == null) {
                     files.put(filePath, Optional.empty());
                     continue;

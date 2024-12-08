@@ -10,6 +10,7 @@ import top.shlande.clouddisk.config.ConfigRepository;
 import top.shlande.clouddisk.entity.Config;
 import top.shlande.clouddisk.entity.User;
 import top.shlande.clouddisk.storage.LocalStorageService;
+import top.shlande.clouddisk.vfs.VFSService;
 
 import java.io.IOException;
 import java.net.URLEncoder;
@@ -23,6 +24,7 @@ import java.util.List;
 public class FileController {
     private final LocalStorageService storageService;
     private final ArchiveService archiveService;
+    private VFSService vfsService;
 
     public FileController(@Autowired LocalStorageService storageService, ArchiveService archiveService) {
         this.storageService = storageService;
@@ -54,12 +56,15 @@ public class FileController {
     public void archive(@RequestParam(name = "path") List<String> paths, HttpServletResponse response) throws IOException {
         SimpleDateFormat dateFormat = new SimpleDateFormat("yyyyMMdd");
         String fileName = "打包下载_" + dateFormat.format(new Date()) + ".zip";
+        if (paths.size() == 1) {
+            fileName = paths.get(0) + '_' + fileName;
+        }
         response.setStatus(200);
         response.setHeader("Content-Disposition", "attachment;filename=" + URLEncoder.encode(fileName, StandardCharsets.UTF_8));
-        if (paths.size() == 0) {
+        if (paths.isEmpty()) {
             paths = List.of("");
         }
-        this.archiveService.archive(paths,response.getOutputStream());
+        this.archiveService.archive(paths, response.getOutputStream());
     }
 
 
@@ -69,6 +74,7 @@ public class FileController {
 
     @Autowired
     private ConfigRepository configRepository;
+
     @PutMapping("/size")
     public void setFileSize(@RequestBody ConfigRequest request) {
         String size = request.size;
